@@ -1,0 +1,114 @@
+function goto2Line(address, blocks)
+% goto2Line Convert selected local goto/from block connections into signal lines.
+%   goto2Line(A, B) Converts goto/from blocks B at address A into signal lines.
+
+    % Parameters - Can be changed by user
+    DRAW_DIRECT = true;     % false = avoid blocks
+    
+    % Check that library is unlocked
+    try
+        assert(strcmp(get_param(bdroot(address), 'Lock'), 'off'))
+    catch ME
+        if strcmp(ME.identifier, 'MATLAB:assert:failed')
+            disp('Error: File is locked')
+            return
+        end
+    end
+    % Check that blocks aren't in a linked library
+    try
+        assert(~strcmp(get_param(address, 'LinkStatus'), 'implicit'))
+    catch ME
+        if strcmp(ME.identifier, 'MATLAB:assert:failed')
+            disp('Error: Cannot modify blocks within a linked library')
+            return
+        end
+    end
+
+    tagsToConnect = {};
+
+    % For each selected block
+    for x = 1:length(blocks)
+        % Get its goto tag
+        try
+            tag = get_param(blocks{x}, 'GotoTag');
+        catch ME
+            if strcmp(ME.identifier, 'Simulink:Commands:ParamUnknown')
+                % If it doesn't have one, then wrong block type
+                disp('Error: A selected block is not a goto/from')
+                return
+            end
+        end
+        % Check that visibility of goto/from is local
+        if strcmp(get_param(blocks{x}, 'TagVisibility'), 'local')
+            tagsToConnect{end+1} = tag;
+        else
+            disp('Error: A selected goto/from does not have a local scope')
+        end
+    end
+
+    % Filter out multiples of tags
+    % e.g. if multiple froms of the same tag were selected
+    % e.g. if both goto/from blocks in pair are selected
+    tagsToConnect = unique(tagsToConnect);  % Tags of blocks to connect
+
+    % For each tag
+    for y = 1:length(tagsToConnect)
+        % Get the goto corresponding to the tag
+        gotos = find_system(address, 'SearchDepth', 1, 'BlockType', 'Goto', 'GotoTag', tagsToConnect{y});
+        if isempty(gotos)
+            disp(['Error: From block ', tagsToConnect{y} , ' has no local matching goto block'])
+            continue
+        end
+
+        % Get the from(s) corresponding to the tag
+        froms = find_system(address, 'SearchDepth', 1, 'BlockType', 'From', 'GotoTag', tagsToConnect{y});
+        if isempty(froms)
+            disp(['Error: Goto block ', tagsToConnect{y} , ' has no local matching from blocks'])
+            continue
+        end
+
+        % Find what block the goto is connected to
+        connections = get_param(gotos, 'PortConnectivity');
+        gotoSrcBlock = connections{1}.SrcBlock;
+        gotoSrcPort = connections{1}.SrcPort;
+
+        % Find which port needs to be connected with a line
+        lineStartPort = get_param(gotoSrcBlock, 'PortHandles');
+        lineStartPort = lineStartPort.Outport(1 + gotoSrcPort);
+
+        % Find endpoint of the signal line which needs deleting
+        gotoPort = get_param(gotos, 'PortHandles');
+        gotoPort = gotoPort{1}.Inport(1);
+
+        % Delete signal line and goto
+        delete_line(address, lineStartPort, gotoPort)
+        delete_block(gotos);
+
+        % For each from
+        for z = 1:length(froms)
+            % Find what block the from is connected to
+            connections = get_param(froms{z}, 'PortConnectivity');
+            fromDstBlock = connections(1).DstBlock;
+            fromDstPort = connections(1).DstPort;
+
+            % Find which port needs to be connected with a line
+            lineEndPort = get_param(fromDstBlock, 'PortHandles');
+            lineEndPort = lineEndPort.Inport(1 + fromDstPort);
+
+            % Find starting point of the signal line which needs deleting
+            fromPort = get_param(froms{z}, 'PortHandles');
+            fromPort = fromPort(1).Outport(1);
+
+            % Delete signal line and from
+            delete_line(address, fromPort, lineEndPort)
+            delete_block(froms{z})
+
+            % Connect block ports with line
+            if DRAW_DIRECT
+                add_line(address, lineStartPort, lineEndPort);
+            else
+                add_line(address, lineStartPort, lineEndPort, 'autorouting', 'on');
+            end
+        end
+    end
+end
