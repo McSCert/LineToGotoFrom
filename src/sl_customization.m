@@ -37,15 +37,21 @@ function schema = Line2GotoSchema(callbackInfo)
 end
 
 function line2GotoCallback(callbackInfo)   
-	% While there are lines selected
-    % Note: Loop will terminate because at each iteration lines are deleted
-	while ~isempty(gcls)
-        % Get the lines
-        lines = gcls;
-        
-        % Get first one of the list
-        l = lines(1);
-        signalName = get_param(l, 'Name'); 
+	
+    allLines = gcls;
+    
+    % Get lines that are trunk lines (Important for branches)
+    trunkLines = {};
+    for i = 1:length(allLines)
+        if strcmp(get_param(allLines(i), 'SegmentType'),'trunk')
+            trunkLines{end+1} = allLines(i);
+        end
+    end
+    
+    % For each trunk line
+	for j = 1:length(trunkLines)
+        line = trunkLines{j};
+        signalName = get_param(line, 'Name'); 
         
         % If the signal line has no name
         if isempty(signalName) || ~isvarname(signalName)
@@ -79,7 +85,7 @@ function line2GotoCallback(callbackInfo)
                         signalName = gotoGUI;
                     case 'No'
                         % Skip this line, continue with the rest
-                        set_param(l, 'Selected', 'off');
+                        set_param(line, 'Selected', 'off');
                         continue
                 end 
             % 2) Check for global goto (anywhere in the model) conflicts 
@@ -97,7 +103,7 @@ function line2GotoCallback(callbackInfo)
                         signalName = gotoGUI;
                     case 'No'
                         % Skip this line, continue with the rest
-                        set_param(l, 'Selected', 'off');
+                        set_param(line, 'Selected', 'off');
                         continue
                 end
             % 3) Check for scoped goto (current level and above) conflicts
@@ -115,15 +121,15 @@ function line2GotoCallback(callbackInfo)
                         signalName = gotoGUI;
                     case 'No'
                         % Skip this line, continue with the rest
-                        set_param(l, 'Selected', 'off');
+                        set_param(line, 'Selected', 'off');
                         continue 
                 end
             end              
         end
         if ~isempty(signalName) % Ensure name was provided in the case "Change Name" was selected
-            line2Goto(gcs, lines(1), signalName);   % Convert
+            line2Goto(gcs, line, signalName);   % Convert
         else    % Dialog was closed, so skip
-            set_param(l, 'Selected', 'off');
+            set_param(line, 'Selected', 'off');
             continue;
         end
 	end

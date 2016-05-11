@@ -1,48 +1,69 @@
 function goto2Line(address, blocks)
 % goto2Line Convert selected local goto/from block connections into signal lines.
-%   goto2Line(A, B) Converts goto/from blocks B at address A into signal lines.
+%   goto2Line(A, B) Converts goto/from blocks B at address A into signal
+%   lines, where:
+%       A is the Simulink system path
+%       B is a cell array of goto/from block path names
+%
+%   Example:
+%
+%   goto2Line(gcs, gcbs)        % converts the currently selected blocks in 
+%                               % the current Simulink system
 
     % Parameters - Can be changed by user
-    DRAW_DIRECT = true;     % false = avoid blocks
+    DRAW_DIRECT = true;     % false = route line around blocks
+                            % true = route line using diagonal lines
     
+    % Check address argument A
     % Check that library is unlocked
     try
-        assert(strcmp(get_param(bdroot(address), 'Lock'), 'off'))
+        assert(strcmp(get_param(bdroot(address), 'Lock'), 'off'));
     catch ME
-        if strcmp(ME.identifier, 'MATLAB:assert:failed')
-            disp('Error: File is locked')
+        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+                strcmp(ME.identifier, 'MATLAB:assertion:failed')
+            disp(['Error using ' mfilename ':' char(10) ...
+                ' File is locked.'])
             return
         end
     end
     % Check that blocks aren't in a linked library
     try
-        assert(~strcmp(get_param(address, 'LinkStatus'), 'implicit'))
+        assert(~strcmp(get_param(address, 'LinkStatus'), 'implicit'));
     catch ME
-        if strcmp(ME.identifier, 'MATLAB:assert:failed')
-            disp('Error: Cannot modify blocks within a linked library')
+        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+                strcmp(ME.identifier, 'MATLAB:assertion:failed')
+            disp(['Error using ' mfilename ':' char(10) ...
+                ' Cannot modify blocks within a linked library.'])
             return
         end
     end
 
+    % Check blocks argument B
     tagsToConnect = {};
-
     % For each selected block
     for x = 1:length(blocks)
         % Get its goto tag
         try
             tag = get_param(blocks{x}, 'GotoTag');
         catch ME
-            if strcmp(ME.identifier, 'Simulink:Commands:ParamUnknown')
+            if strcmp(ME.identifier, 'Simulink:Commands:ParamUnknown') 
                 % If it doesn't have one, then wrong block type
-                disp('Error: A selected block is not a goto/from')
+                disp(['Error using ' mfilename ':' char(10) ...
+                ' A selected block is not a goto/from.'])
+                return
+            else
+                disp(['Error using ' mfilename ':' char(10) ...
+                ' Invalid block argument B.' char(10)])
+                help(mfilename)
                 return
             end
         end
         % Check that visibility of goto/from is local
         if strcmp(get_param(blocks{x}, 'TagVisibility'), 'local')
-            tagsToConnect{end+1} = tag;
+            tagsToConnect{end+1} = tag; % Append to list
         else
-            disp('Error: A selected goto/from does not have a local scope')
+            disp(['Error using ' mfilename ':' char(10) ...
+                ' A selected goto/from does not have a local scope.'])
         end
     end
 

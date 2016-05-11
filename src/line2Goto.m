@@ -1,29 +1,76 @@
 function line2Goto(address, line, tag)
 % line2Goto Convert a signal line into a goto/from connection.
 %   line2Goto(A, L, T) Converts line L at address A to goto/from
-%   connections with tag T.
+%   connections with tag T, where:
+%       A is the system path
+%       L is the line handle
+%       T is a string
+%
+%   Example:
+%
+%   line2Goto(gcs, gcl, 'NewLine')  % converts the currently selected line in 
+%                                   % the current Simulink system to goto/from
+%                                   % blocks with tag 'NewLine'
     
     % Parameters - Can be changed by user
     RESIZE_BLOCK = true; % Resize blocks to accomodate tags. Can be done dynamically or to a static value
     
+    % Check address argument A
     % Check that library is unlocked
     try
-        assert(strcmp(get_param(bdroot(address), 'Lock'), 'off'))
+        assert(strcmp(get_param(bdroot(address), 'Lock'), 'off'));
     catch ME
-        if strcmp(ME.identifier, 'MATLAB:assert:failed')
-            disp('Error: File is locked')
+        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+                strcmp(ME.identifier, 'MATLAB:assertion:failed')
+            disp(['Error using ' mfilename ':' char(10) ...
+                ' File is locked.'])
+            return
+        else
+            disp(['Error using ' mfilename ':' char(10) ...
+                ' Invalid address argument A.' char(10)])
+            help(mfilename)
             return
         end
     end
     % Check that blocks aren't in a linked library
     try
-        assert(~strcmp(get_param(address, 'LinkStatus'), 'implicit'))
+        assert(~strcmp(get_param(address, 'LinkStatus'), 'implicit'));
     catch ME
-        if strcmp(ME.identifier, 'MATLAB:assert:failed')
-            disp('Error: Cannot modify blocks within a linked library')
+        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+                strcmp(ME.identifier, 'MATLAB:assertion:failed')
+            disp(['Error using ' mfilename ':' char(10) ...
+                ' Cannot modify blocks within a linked library.'])
             return
         end
     end
+    
+    % Check line argument L
+    try
+        assert(~isempty(line));
+        assert(strcmp(get_param(line, 'Type'), 'Line'));
+    catch ME
+        %if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+                strcmp(ME.identifier, 'MATLAB:assertion:failed')
+            disp(['Error using ' mfilename ':' char(10) ...
+                ' Invalid line argument L.' char(10)])
+            help(mfilename)
+            return
+      %  end
+    end
+    
+   % Check tag argument T
+   try
+        assert(isvarname(tag));
+    catch ME
+        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+                strcmp(ME.identifier, 'MATLAB:assertion:failed')
+            disp(['Error using ' mfilename ':' char(10) ... 
+                ' Invalid goto/from tag name provided. Valid ' ...
+                'identifiers start with a letter, contain no spaces or ' ...
+                'special characters and are at most 63 characters long.'])
+            return
+        end
+   end
     
     % Get the line's source and destination blocks' ports
     srcPort = get_param(line, 'SrcPortHandle');
@@ -56,7 +103,7 @@ function line2Goto(address, line, tag)
             newGoto = add_block('ChryslerLib/Signals/Goto', [address '/Goto' num2str(num)]);
         catch ME
             % If a block already exists with the same name
-			if strcmp(ME.identifier, 'Simulink:Commands:AddBlockCantAdd')
+            if strcmp(ME.identifier, 'Simulink:Commands:AddBlockCantAdd')
 				num = num + 1;  % Try next name
 				error = true;
             end     
@@ -70,8 +117,8 @@ function line2Goto(address, line, tag)
         while error
             error = false;
             try
-                %newFrom(j) = add_block('built-in/From', [address '/From' num2str(num+j)]);
-                newFrom(j) = add_block('ChryslerLib/Signals/From', [address '/From' num2str(num+j)]);
+                %newFrom(j) = add_block('built-in/From', [address '/From' num2str(num+j-1)]);
+                newFrom(j) = add_block('ChryslerLib/Signals/From', [address '/From' num2str(num+j-1)]);
             catch ME
                 if strcmp(ME.identifier, 'Simulink:Commands:AddBlockCantAdd')
                     num = num + 1;  % Try next name
