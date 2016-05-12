@@ -134,9 +134,15 @@ function goto2Line(address, blocks)
             % Get the port handles
             lineEndPort = get_param(fromDstBlocks, 'PortHandles');
             lineEndPortHandles = {};
-            for a = 1:length(lineEndPort)
-                iPort = lineEndPort{a};
-                lineEndPortHandles{a} = iPort.Inport(fromDstPorts(a) + 1);
+            
+            % If many destinations given in a cell array
+            if length(fromDstPorts) == 1
+                lineEndPortHandles{1} = lineEndPort.Inport(fromDstPorts + 1);
+            else
+                for a = 1:length(lineEndPort)
+                    iPort = lineEndPort{a};
+                    lineEndPortHandles{a} = iPort.Inport(fromDstPorts(a) + 1);
+                end
             end
             
             % Find starting point of the signal line which needs deleting

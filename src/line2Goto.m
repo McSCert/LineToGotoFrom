@@ -224,8 +224,8 @@ function resizeGotoFrom(block)
 %   resizeLengthGotoFrom(B) Resizes goto/from block B according to its tag
 
     % Parameters - Can be changed by user
-    STATIC_RESIZE = true;   % Resize blocks to the STATIC_SIZE value. If false, blocks are dynamically resized
-    STATIC_LENGTH = 150;
+    STATIC_RESIZE = false;   % Resize blocks to the STATIC_SIZE value. If false, blocks are dynamically resized
+    STATIC_LENGTH = 140;
     STATIC_HEIGHT = 20;
     PX_PER_LETTER = 9;	% Number of pixels to allocate. On average this is sufficient 
 
