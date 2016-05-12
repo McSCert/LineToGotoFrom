@@ -54,6 +54,8 @@ function goto2Line(address, blocks)
     end
 
     % Check blocks argument B
+    % 1) Check that each block is a goto block
+    % 2) Check that its visibility is local
     tagsToConnect = {};
     % For each selected block
     for x = 1:length(blocks)
@@ -64,11 +66,11 @@ function goto2Line(address, blocks)
             if strcmp(ME.identifier, 'Simulink:Commands:ParamUnknown') 
                 % If it doesn't have one, then wrong block type
                 disp(['Error using ' mfilename ':' char(10) ...
-                ' A selected block is not a goto/from.'])
+                    ' A selected block is not a goto/from.'])
                 return
             else
                 disp(['Error using ' mfilename ':' char(10) ...
-                ' Invalid block argument B.' char(10)])
+                    ' Invalid block argument B.' char(10)])
                 help(mfilename)
                 return
             end
@@ -93,7 +95,7 @@ function goto2Line(address, blocks)
         gotos = find_system(address, 'SearchDepth', 1, 'BlockType', 'Goto', 'GotoTag', tagsToConnect{y});
         if isempty(gotos)
             disp(['Error using ' mfilename ':' char(10) ...
-            ' From block ', tagsToConnect{y} , ' has no local matching goto block.'])
+                ' From block ', tagsToConnect{y} , ' has no local matching goto block.'])
             continue
         end
 
@@ -101,7 +103,7 @@ function goto2Line(address, blocks)
         froms = find_system(address, 'SearchDepth', 1, 'BlockType', 'From', 'GotoTag', tagsToConnect{y});
         if isempty(froms)
             disp(['Error using ' mfilename ':' char(10) ...
-            ' Goto block ', tagsToConnect{y} , ' has no local matching from blocks.'])
+                ' Goto block ', tagsToConnect{y} , ' has no local matching from blocks.'])
             continue
         end
 
