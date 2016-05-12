@@ -97,6 +97,9 @@ function goto2Line(address, blocks)
             disp(['Error using ' mfilename ':' char(10) ...
                 ' From block ', tagsToConnect{y} , ' has no local matching goto block.'])
             continue
+        elseif length(gotos) > 1
+            disp(['Warning using ' mfilename ':' char(10) ...
+                ' Multiple goto blocks with tag "', tagsToConnect{y} , '" exist. Some blocks may be unconnected.'])         
         end
 
         % Get the from(s) corresponding to the tag
