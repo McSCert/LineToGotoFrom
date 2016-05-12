@@ -78,9 +78,7 @@ function line2GotoCallback(callbackInfo)
                     'Yes', 'Change Name', 'No', 'Change Name');
                 switch answer 
                     case 'Yes'
-                        disp(['Warning using line2Goto: ' char(10) ...
-                            ' Goto block "', signalName, '" already exists locally:'])
-                        disp(conflictLocalGotos)
+                        % Use the provided tag
                     case 'Change Name'
                         % Try again
                         signalName = gotoGUI;
@@ -101,9 +99,7 @@ function line2GotoCallback(callbackInfo)
                     'Yes', 'Change Name', 'No', 'Change Name');
                 switch answer 
                     case 'Yes'
-                        disp(['Warning using line2Goto: ' char(10) ...
-                             ' Goto block "' signalName '" overlaps with existing global goto:'])
-                        disp(conflictsGlobalGotos)
+                        % Use the provided tag
                     case 'Change Name'
                         % Try again
                         signalName = gotoGUI;
@@ -124,9 +120,7 @@ function line2GotoCallback(callbackInfo)
                     'Yes', 'Change Name', 'No', 'Change Name');
                 switch answer 
                     case 'Yes'
-                        disp(['Warning using line2Goto: ' char(10) ...
-                            ' Goto block "' signalName '" overlaps with existing scoped goto(s):'])
-                        disp(conflictsScopedGotos)
+                        % Use the provided tag
                     case 'Change Name'
                         % Try again
                         signalName = gotoGUI;
