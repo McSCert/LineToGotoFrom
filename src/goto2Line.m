@@ -9,12 +9,25 @@ function goto2Line(address, blocks)
 %
 %   goto2Line(gcs, gcbs)        % converts the currently selected blocks in 
 %                               % the current Simulink system
+%
+%   goto2Line(gcs, {gcb})       % converts the currently selected block in 
+%                               % the current Simulink system
 
     % Parameters - Can be changed by user
     DRAW_DIRECT = true;     % false = route line around blocks
                             % true = route line using diagonal lines
     
     % Check address argument A
+	% Check model at address is open
+    try
+       assert(bdIsLoaded(address));
+    catch
+        disp(['Error using ' mfilename ':' char(10) ...
+            ' Invalid address argument A. Model may not be loaded or name is invalid.' char(10)])
+        help(mfilename)
+        return
+    end
+    
     % Check that library is unlocked
     try
         assert(strcmp(get_param(bdroot(address), 'Lock'), 'off'));

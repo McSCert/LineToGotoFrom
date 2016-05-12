@@ -16,6 +16,16 @@ function line2Goto(address, line, tag)
     RESIZE_BLOCK = true; % Resize blocks to accomodate tags. Can be done dynamically or to a static value
     
     % Check address argument A
+    % Check that model at address is open
+    try
+       assert(bdIsLoaded(address));
+    catch
+        disp(['Error using ' mfilename ':' char(10) ...
+            ' Invalid address argument A. Model may not be loaded or name is invalid.' char(10)])
+        help(mfilename)
+        return
+    end
+    
     % Check that library is unlocked
     try
         assert(strcmp(get_param(bdroot(address), 'Lock'), 'off'));
