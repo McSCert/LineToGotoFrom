@@ -98,7 +98,31 @@ function line2Goto(address, line, tag)
             return
         end
    end
-    
+   
+    % Check for conflicts with existing gotos with the same name
+    % (for command line usage)
+    conflictLocalGotos = find_system(address, 'SearchDepth', 1, 'BlockType', 'Goto', 'GotoTag', tag);
+
+    conflictsGlobalGotos = find_system(bdroot, 'BlockType', 'Goto', 'TagVisibility', 'global', 'GotoTag', tag);
+
+    allScopedGotos = find_system(bdroot, 'BlockType', 'Goto', 'TagVisibility', 'scoped', 'GotoTag', tag);
+    belowScopedGotos = find_system(address, 'BlockType', 'Goto', 'TagVisibility', 'scoped', 'GotoTag', tag);
+    conflictsScopedGotos = setdiff(allScopedGotos, belowScopedGotos);  
+   
+    if ~isempty(conflictLocalGotos)
+        disp(['Warning using ' mfilename ':' char(10) ...
+            ' Goto block "', tag, '" already exists locally:'])
+        disp(conflictLocalGotos)
+    elseif ~isempty(conflictsGlobalGotos)
+         disp(['Warning using ' mfilename ':' char(10) ...
+             ' Goto block "' tag '" overlaps with existing global goto:'])  
+         disp(conflictsGlobalGotos)
+    elseif ~isempty(conflictsScopedGotos)
+         disp(['Warning using ' mfilename ':' char(10) ...
+            ' Goto block "' tag '" overlaps with existing scoped goto(s):'])
+        disp(conflictsScopedGotos)
+    end
+         
     % Get the line's source and destination blocks' ports
     srcPort = get_param(line, 'SrcPortHandle');
     dstPort = get_param(line, 'DstPortHandle');
