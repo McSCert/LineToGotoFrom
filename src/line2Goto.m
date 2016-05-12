@@ -47,7 +47,7 @@ function line2Goto(address, line, tag)
     % Check line argument L
     try
         assert(~isempty(line));
-        assert(ishandle(line));
+        assert(ishandle(line))
         assert(strcmp(get_param(line, 'Type'), 'line'));
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 

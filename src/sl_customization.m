@@ -75,10 +75,11 @@ function line2GotoCallback(callbackInfo)
                 answer = questdlg(['A local goto named "' signalName '" already exists.' ...
                     char(10) 'Proceed with transformation?'], ...
                     'Line to Goto/Froms: Warning', ...
-                    'Yes', 'Change Name', 'No', 'No');
+                    'Yes', 'Change Name', 'No', 'Change Name');
                 switch answer 
                     case 'Yes'
-                        disp(['Warning: Goto block named "', signalName, '" already exists locally:'])
+                        disp(['Warning using line2Goto: ' char(10) ...
+                            ' Goto block named "', signalName, '" already exists locally:'])
                         disp(conflictLocalGotos)
                     case 'Change Name'
                         % Try again
@@ -87,16 +88,21 @@ function line2GotoCallback(callbackInfo)
                         % Skip this line, continue with the rest
                         set_param(line, 'Selected', 'off');
                         continue
+                     case ''
+                        % Skip this line, continue with the rest
+                        set_param(line, 'Selected', 'off');
+                        continue  
                 end 
             % 2) Check for global goto (anywhere in the model) conflicts 
             elseif ~isempty(conflictsGlobalGotos)
                 answer = questdlg(['A global goto named "' signalName '" already exists.' ...
                     char(10) ' Proceed with transformation?'], ...
                     'Line to Goto/Froms: Warning', ...
-                    'Yes', 'Change Name', 'No', 'No');
+                    'Yes', 'Change Name', 'No', 'Change Name');
                 switch answer 
                     case 'Yes'
-                        disp(['Warning: Goto block named "' signalName '" overlaps with existing global goto:'])
+                        disp(['Warning using line2Goto: ' char(10) ...
+                             ' Goto block named "' signalName '" overlaps with existing global goto:'])
                         disp(conflictsGlobalGotos)
                     case 'Change Name'
                         % Try again
@@ -105,16 +111,21 @@ function line2GotoCallback(callbackInfo)
                         % Skip this line, continue with the rest
                         set_param(line, 'Selected', 'off');
                         continue
+                    case ''
+                        % Skip this line, continue with the rest
+                        set_param(line, 'Selected', 'off');
+                        continue  
                 end
             % 3) Check for scoped goto (current level and above) conflicts
             elseif ~isempty(conflictsScopedGotos)
                 answer = questdlg(['A scoped goto named "' signalName '" already exists.' ...
                     char(10) ' Proceed with transformation?'], ...
                     'Line to Goto/Froms: Warning', ...
-                    'Yes', 'Change Name', 'No', 'No');
+                    'Yes', 'Change Name', 'No', 'Change Name');
                 switch answer 
                     case 'Yes'
-                        disp(['Warning: Goto block named "' signalName '" overlaps with existing scoped goto(s):'])
+                        disp(['Warning using line2Goto: ' char(10) ...
+                            ' Goto block named "' signalName '" overlaps with existing scoped goto(s):'])
                         disp(conflictsScopedGotos)
                     case 'Change Name'
                         % Try again
@@ -122,7 +133,11 @@ function line2GotoCallback(callbackInfo)
                     case 'No'
                         % Skip this line, continue with the rest
                         set_param(line, 'Selected', 'off');
-                        continue 
+                        continue
+                    case ''
+                        % Skip this line, continue with the rest
+                        set_param(line, 'Selected', 'off');
+                        continue   
                 end
             end              
         end

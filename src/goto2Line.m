@@ -28,7 +28,8 @@ function goto2Line(address, blocks)
     end
     % Check that blocks aren't in a linked library
     try
-        assert(~strcmp(get_param(address, 'LinkStatus'), 'implicit'));
+        assert(strcmp(get_param(address, 'LinkStatus'), 'none') || ...
+        strcmp(get_param(address, 'LinkStatus'), 'resolved'));
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
@@ -77,14 +78,16 @@ function goto2Line(address, blocks)
         % Get the goto corresponding to the tag
         gotos = find_system(address, 'SearchDepth', 1, 'BlockType', 'Goto', 'GotoTag', tagsToConnect{y});
         if isempty(gotos)
-            disp(['Error: From block ', tagsToConnect{y} , ' has no local matching goto block'])
+            disp(['Error using ' mfilename ':' char(10) ...
+            ' From block ', tagsToConnect{y} , ' has no local matching goto block.'])
             continue
         end
 
         % Get the from(s) corresponding to the tag
         froms = find_system(address, 'SearchDepth', 1, 'BlockType', 'From', 'GotoTag', tagsToConnect{y});
         if isempty(froms)
-            disp(['Error: Goto block ', tagsToConnect{y} , ' has no local matching from blocks'])
+            disp(['Error using ' mfilename ':' char(10) ...
+            ' Goto block ', tagsToConnect{y} , ' has no local matching from blocks.'])
             continue
         end
 
