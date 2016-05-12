@@ -58,7 +58,7 @@ function line2Goto(address, line, tag)
     % Check line argument L
     try
         assert(~isempty(line));
-        assert(ishandle(line))
+        assert(ishandle(line));
         assert(strcmp(get_param(line, 'Type'), 'line'));
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
@@ -71,6 +71,18 @@ function line2Goto(address, line, tag)
     end
     
    % Check tag argument T
+   % 1) Check type
+    try
+        assert(ischar(tag));
+    catch ME
+        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+                strcmp(ME.identifier, 'MATLAB:assertion:failed')
+            disp(['Error using ' mfilename ':' char(10) ... 
+                ' Invalid goto/from tag provided. Tag must be a char.'])
+            return
+        end
+    end
+   % 2) Check that it can be used as a variable name
    try
         assert(isvarname(tag));
     catch ME
