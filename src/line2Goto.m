@@ -18,7 +18,7 @@ function line2Goto(address, line, tag)
     % Check address argument A
     % 1) Check that model at address is open
     try
-       assert(bdIsLoaded(address));
+       assert(bdIsLoaded(bdroot(address)));
     catch
         disp(['Error using ' mfilename ':' char(10) ...
             ' Invalid address argument A. Model may not be loaded or name is invalid.' char(10)])

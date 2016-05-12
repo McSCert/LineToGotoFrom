@@ -14,13 +14,13 @@ function goto2Line(address, blocks)
 %                               % the current Simulink system
 
     % Parameters - Can be changed by user
-    DRAW_DIRECT = true;     % false = route line around blocks
-                            % true = route line using diagonal lines
+    LINE_ROUTING = true;     % true = route line around blocks
+                             % false = route line with diagonal lines
     
     % Check address argument A
 	% 1) Check model at address is open
     try
-       assert(bdIsLoaded(address));
+       assert(bdIsLoaded(bdroot(address)));
     catch
         disp(['Error using ' mfilename ':' char(10) ...
             ' Invalid address argument A. Model may not be loaded or name is invalid.' char(10)])
@@ -111,41 +111,51 @@ function goto2Line(address, blocks)
         gotoSrcPort = connections{1}.SrcPort;
 
         % Find which port needs to be connected with a line
-        lineStartPort = get_param(gotoSrcBlock, 'PortHandles');
-        lineStartPort = lineStartPort.Outport(1 + gotoSrcPort);
+        lineStartPortHandle = get_param(gotoSrcBlock, 'PortHandles');
+        lineStartPortHandle = lineStartPortHandle.Outport(gotoSrcPort + 1);
 
         % Find endpoint of the signal line which needs deleting
-        gotoPort = get_param(gotos, 'PortHandles');
-        gotoPort = gotoPort{1}.Inport(1);
+        gotoPortHandle = get_param(gotos, 'PortHandles');
+        gotoPortHandle = gotoPortHandle{1}.Inport(1);
 
         % Delete signal line and goto
-        delete_line(address, lineStartPort, gotoPort)
+        delete_line(address, lineStartPortHandle, gotoPortHandle)
         delete_block(gotos);
 
         % For each from
         for z = 1:length(froms)
-            % Find what block the from is connected to
+            % Find what blocks and ports the from is connected to
             connections = get_param(froms{z}, 'PortConnectivity');
-            fromDstBlock = connections(1).DstBlock;
-            fromDstPort = connections(1).DstPort;
+            fromDstBlocks = connections.DstBlock;
+            fromDstPorts = connections.DstPort;  
 
-            % Find which port needs to be connected with a line
-            lineEndPort = get_param(fromDstBlock, 'PortHandles');
-            lineEndPort = lineEndPort.Inport(1 + fromDstPort);
-
+            % Get the port handles
+            lineEndPort = get_param(fromDstBlocks, 'PortHandles');
+            lineEndPortHandles = {};
+            for a = 1:length(lineEndPort)
+                iPort = lineEndPort{a};
+                lineEndPortHandles{a} = iPort.Inport(fromDstPorts(a) + 1);
+            end
+            
             % Find starting point of the signal line which needs deleting
-            fromPort = get_param(froms{z}, 'PortHandles');
-            fromPort = fromPort(1).Outport(1);
+            fromPortHandle = get_param(froms{z}, 'PortHandles');
+            fromPortHandle = fromPortHandle.Outport;
 
-            % Delete signal line and from
-            delete_line(address, fromPort, lineEndPort)
+            % Delete signal lines and from
+            for b = 1:length(lineEndPortHandles)
+                delete_line(address, fromPortHandle, lineEndPortHandles{b});
+            end
             delete_block(froms{z})
 
             % Connect block ports with line
-            if DRAW_DIRECT
-                add_line(address, lineStartPort, lineEndPort);
+            if LINE_ROUTING
+                for c = 1:length(lineEndPortHandles)
+                    add_line(address, lineStartPortHandle, lineEndPortHandles{c}, 'autorouting', 'on');
+                end
             else
-                add_line(address, lineStartPort, lineEndPort, 'autorouting', 'on');
+                for d = 1:length(lineEndPortHandles)
+                    add_line(address, lineStartPortHandle, lineEndPortHandles{d});
+                end
             end
         end
     end
