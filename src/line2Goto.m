@@ -55,7 +55,7 @@ function line2Goto(address, line, tag)
                 ' Invalid line argument L.' char(10)])
             help(mfilename)
             return
-      %  end
+        end
     end
     
    % Check tag argument T
