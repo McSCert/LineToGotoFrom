@@ -4,7 +4,7 @@ function line2Goto(address, line, tag)
 %   connections with tag T, where:
 %       A is the system path
 %       L is the line handle
-%       T is a string
+%       T is a valid variable name string
 %
 %   Example:
 %
