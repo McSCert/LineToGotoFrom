@@ -56,6 +56,9 @@ function line2Goto(address, line, tag)
     end
     
     % Check line argument L
+    % 1) Check that a value was provided
+    % 2) Check that it is a valid handle to an object
+    % 3) Check that it is the handle for a line
     try
         assert(~isempty(line));
         assert(ishandle(line));
@@ -89,8 +92,8 @@ function line2Goto(address, line, tag)
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
             disp(['Error using ' mfilename ':' char(10) ... 
-                ' Invalid goto/from tag name provided. Valid ' ...
-                'identifiers start with a letter, contain no spaces or ' ...
+                ' The goto/from tag provided is not a valid identifier. ' ...
+                'Identifiers start with a letter, contain no spaces or ' ...
                 'special characters and are at most 63 characters long.'])
             return
         end
