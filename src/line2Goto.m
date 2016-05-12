@@ -16,7 +16,7 @@ function line2Goto(address, line, tag)
     RESIZE_BLOCK = true; % Resize blocks to accomodate tags. Can be done dynamically or to a static value
     
     % Check address argument A
-    % Check that model at address is open
+    % 1) Check that model at address is open
     try
        assert(bdIsLoaded(address));
     catch
@@ -25,8 +25,8 @@ function line2Goto(address, line, tag)
         help(mfilename)
         return
     end
-    
-    % Check that library is unlocked
+
+    % 2) Check that library is unlocked
     try
         assert(strcmp(get_param(bdroot(address), 'Lock'), 'off'));
     catch ME
@@ -42,7 +42,8 @@ function line2Goto(address, line, tag)
             return
         end
     end
-    % Check that blocks aren't in a linked library
+    
+    % 3) Check that blocks aren't in a linked library
     try
         assert(~strcmp(get_param(address, 'LinkStatus'), 'implicit'));
     catch ME

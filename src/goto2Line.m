@@ -18,7 +18,7 @@ function goto2Line(address, blocks)
                             % true = route line using diagonal lines
     
     % Check address argument A
-	% Check model at address is open
+	% 1) Check model at address is open
     try
        assert(bdIsLoaded(address));
     catch
@@ -28,7 +28,7 @@ function goto2Line(address, blocks)
         return
     end
     
-    % Check that library is unlocked
+    % 2) Check that library is unlocked
     try
         assert(strcmp(get_param(bdroot(address), 'Lock'), 'off'));
     catch ME
@@ -39,7 +39,8 @@ function goto2Line(address, blocks)
             return
         end
     end
-    % Check that blocks aren't in a linked library
+    
+    % 3) Check that blocks aren't in a linked library
     try
         assert(strcmp(get_param(address, 'LinkStatus'), 'none') || ...
         strcmp(get_param(address, 'LinkStatus'), 'resolved'));
