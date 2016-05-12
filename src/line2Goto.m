@@ -198,7 +198,7 @@ function line2Goto(address, line, tag)
         moveToPort(newFrom(l), dstPort(l), 1);
     end
     
-    % Lengthen blocks to accomodate tags
+    % Resize blocks to accomodate tags
     if RESIZE_BLOCK
         resizeGotoFrom(newGoto);
         for m = 1:numOfFroms
@@ -257,23 +257,18 @@ function resizeGotoFrom(block)
     % Parameters - Can be changed by user
     STATIC_RESIZE = false;   % Resize blocks to the STATIC_SIZE value. If false, blocks are dynamically resized
     STATIC_LENGTH = 140;
-    STATIC_HEIGHT = 20;
     PX_PER_LETTER = 9;	% Number of pixels to allocate. On average this is sufficient 
 
     % Get the block information
     origBlockPosition = get_param(block, 'Position');
     origLength = origBlockPosition(3) - origBlockPosition(1);
-    origHeight = origBlockPosition(4) - origBlockPosition(2);
     tag = get_param(block, 'GotoTag');
     
     newBlockPosition = origBlockPosition;
-    
     newLength = origLength;
-    newHeight = origHeight;
     
     if STATIC_RESIZE
         newLength = STATIC_LENGTH;
-        newHeight = STATIC_HEIGHT;
     else % DYNAMIC
         newLength = length(tag) * PX_PER_LETTER;
         if newLength < origLength % Don't make it smaller
