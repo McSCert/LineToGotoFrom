@@ -18,6 +18,7 @@ function line2Goto(address, line, tag)
     % Check address argument A
     % 1) Check that model at address is open
     try
+       assert(~iscell(address));
        assert(bdIsLoaded(bdroot(address)));
     catch
         disp(['Error using ' mfilename ':' char(10) ...
@@ -63,14 +64,11 @@ function line2Goto(address, line, tag)
         assert(~isempty(line));
         assert(ishandle(line));
         assert(strcmp(get_param(line, 'Type'), 'line'));
-    catch ME
-        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
-                strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' Invalid line argument L.' char(10)])
-            help(mfilename)
-            return
-        end
+    catch
+        disp(['Error using ' mfilename ':' char(10) ...
+            ' Invalid line argument L.' char(10)])
+        help(mfilename)
+        return
     end
     
    % Check tag argument T

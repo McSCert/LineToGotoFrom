@@ -20,6 +20,7 @@ function goto2Line(address, blocks)
     % Check address argument A
 	% 1) Check model at address is open
     try
+       assert(~iscell(address));
        assert(bdIsLoaded(bdroot(address)));
     catch
         disp(['Error using ' mfilename ':' char(10) ...
@@ -129,43 +130,39 @@ function goto2Line(address, blocks)
 
         % For each from
         for z = 1:length(froms)
-            % Find what blocks and ports the from is connected to
-            connections = get_param(froms{z}, 'PortConnectivity');
-            fromDstBlocks = connections.DstBlock;
-            fromDstPorts = connections.DstPort;  
-
-            % Get the port handles
-            lineEndPort = get_param(fromDstBlocks, 'PortHandles');
-            lineEndPortHandles = {};
             
-            % If many destinations given in a cell array
-            if length(fromDstPorts) == 1
-                lineEndPortHandles{1} = lineEndPort.Inport(fromDstPorts + 1);
-            else
-                for a = 1:length(lineEndPort)
-                    iPort = lineEndPort{a};
-                    lineEndPortHandles{a} = iPort.Inport(fromDstPorts(a) + 1);
-                end
-            end
-            
-            % Find starting point of the signal line which needs deleting
+            % Get the from's port handle
             fromPortHandle = get_param(froms{z}, 'PortHandles');
             fromPortHandle = fromPortHandle.Outport;
 
+            % Find what block ports the from is connected to
+            fromLineHandle = get_param(fromPortHandle, 'Line');
+            
+            % If the from is not connected to anything, just delete it
+            if ~ishandle(fromLineHandle)
+                delete_block(froms{z})
+                continue
+            else
+                % Otherwise, find what ports the line is connected to
+                fromDstPortHandle = get_param(fromLineHandle, 'Dstporthandle');
+            end
+            
             % Delete signal lines and from
-            for b = 1:length(lineEndPortHandles)
-                delete_line(address, fromPortHandle, lineEndPortHandles{b});
+            for b = 1:length(fromDstPortHandle)
+                delete_line(address, fromPortHandle, fromDstPortHandle(b));
             end
             delete_block(froms{z})
 
             % Connect block ports with line
             if LINE_ROUTING
-                for c = 1:length(lineEndPortHandles)
-                    add_line(address, lineStartPortHandle, lineEndPortHandles{c}, 'autorouting', 'on');
+                for c = 1:length(fromDstPortHandle)
+                    if ishandle(lineStartPortHandle) && ishandle(fromDstPortHandle(c))
+                        add_line(address, lineStartPortHandle, fromDstPortHandle(c), 'autorouting', 'on');
+                    end
                 end
             else
-                for d = 1:length(lineEndPortHandles)
-                    add_line(address, lineStartPortHandle, lineEndPortHandles{d});
+                for d = 1:length(fromDstPortHandle)
+                    add_line(address, lineStartPortHandle, fromDstPortHandle(d));
                 end
             end
         end
