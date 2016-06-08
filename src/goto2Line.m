@@ -44,7 +44,7 @@ function goto2Line(address, blocks)
     % 3) Check that blocks aren't in a linked library
     try
         assert(strcmp(get_param(address, 'LinkStatus'), 'none') || ...
-        strcmp(get_param(address, 'LinkStatus'), 'resolved'));
+        strcmp(get_param(address, 'LinkStatus'), 'inactive'));
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
