@@ -20,7 +20,7 @@ function goto2Line(address, blocks)
     % Check address argument A
 	% 1) Check model at address is open
     try
-       assert(~iscell(address));
+       assert(ischar(address));
        assert(bdIsLoaded(bdroot(address)));
     catch
         disp(['Error using ' mfilename ':' char(10) ...
