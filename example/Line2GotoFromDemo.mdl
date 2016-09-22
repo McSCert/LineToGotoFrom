@@ -1,5 +1,5 @@
 Model {
-  Name			  "LineGotoFromDemo"
+  Name			  "Line2GotoFromDemo"
   Version		  7.8
   MdlSubVersion		  0
   GraphicalInterface {
@@ -19,7 +19,7 @@ Model {
       Name		      "Out1"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.30"
+    ComputedModelVersion    "1.52"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -38,11 +38,11 @@ Model {
   Creator		  "T6684MB"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "T6684MB"
+  LastModifiedBy	  "monika"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue May 03 18:01:07 2016"
-  RTWModifiedTimeStamp	  384199244
-  ModelVersionFormat	  "1.%<AutoIncrement:30>"
+  LastModifiedDate	  "Thu Sep 22 19:02:49 2016"
+  RTWModifiedTimeStamp	  396471749
+  ModelVersionFormat	  "1.%<AutoIncrement:52>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -80,6 +80,7 @@ Model {
     $ObjectID		    1
     $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
     model_		    "LineGotoFromDemo"
+    signals_		    []
     overrideMode_	    [0.0]
     Array {
       Type		      "Cell"
@@ -722,6 +723,14 @@ Model {
       InitialOutput	      "[]"
     }
     Block {
+      BlockType		      RelationalOperator
+      Operator		      ">="
+      InputSameDT	      on
+      OutDataTypeStr	      "Inherit: Logical (see Configuration Parameters: Optimization)"
+      ZeroCross		      on
+      SampleTime	      "-1"
+    }
+    Block {
       BlockType		      SubSystem
       ShowPortLabels	      "FromPortIcon"
       Permissions	      "ReadWrite"
@@ -771,8 +780,8 @@ Model {
     }
   }
   System {
-    Name		    "LineGotoFromDemo"
-    Location		    [274, 284, 1157, 634]
+    Name		    "Line2GotoFromDemo"
+    Location		    [388, 286, 1213, 584]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -786,12 +795,12 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "62"
+    SIDHighWatermark	    "84"
     Block {
       BlockType		      Inport
       Name		      "In1"
       SID		      "57"
-      Position		      [60, 88, 90, 102]
+      Position		      [50, 63, 80, 77]
       ZOrder		      -1
       IconDisplay	      "Port number"
     }
@@ -799,7 +808,7 @@ Model {
       BlockType		      Inport
       Name		      "In2"
       SID		      "58"
-      Position		      [60, 208, 90, 222]
+      Position		      [50, 223, 80, 237]
       ZOrder		      -1
       Port		      "2"
       IconDisplay	      "Port number"
@@ -809,7 +818,7 @@ Model {
       Name		      "Add"
       SID		      "33"
       Ports		      [2, 1]
-      Position		      [675, 69, 710, 171]
+      Position		      [615, 69, 650, 171]
       ZOrder		      -2
       InputSameDT	      off
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
@@ -817,29 +826,52 @@ Model {
     }
     Block {
       BlockType		      From
-      Name		      "From1"
-      SID		      "62"
-      Position		      [570, 136, 645, 154]
-      ShowName		      off
+      Name		      "From0"
+      SID		      "83"
+      Position		      [485, 136, 560, 154]
       GotoTag		      "A"
+      Port {
+	PortNumber		1
+	Name			"A"
+	RTWStorageClass		"Auto"
+	DataLoggingNameMode	"SignalName"
+      }
+    }
+    Block {
+      BlockType		      From
+      Name		      "From1"
+      SID		      "84"
+      Position		      [120, 111, 195, 129]
+      GotoTag		      "A"
+      Port {
+	PortNumber		1
+	Name			"A"
+	RTWStorageClass		"Auto"
+	DataLoggingNameMode	"SignalName"
+      }
     }
     Block {
       BlockType		      Gain
       Name		      "Gain"
       SID		      "60"
-      Position		      [175, 200, 205, 230]
+      Position		      [145, 215, 175, 245]
       ZOrder		      -8
-      Gain		      "2"
+      Gain		      "5"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
+      Port {
+	PortNumber		1
+	Name			"A"
+	RTWStorageClass		"Auto"
+	DataLoggingNameMode	"SignalName"
+      }
     }
     Block {
       BlockType		      Goto
       Name		      "Goto0"
-      SID		      "61"
-      Position		      [235, 206, 310, 224]
-      ShowName		      off
+      SID		      "82"
+      Position		      [235, 221, 310, 239]
       GotoTag		      "A"
       TagVisibility	      "local"
     }
@@ -847,8 +879,8 @@ Model {
       BlockType		      SubSystem
       Name		      "Subsystem"
       SID		      "37"
-      Ports		      [1, 1]
-      Position		      [275, 43, 375, 147]
+      Ports		      [2, 1]
+      Position		      [250, 43, 350, 147]
       ZOrder		      -17
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -887,10 +919,30 @@ Model {
 	  IconDisplay		  "Port number"
 	}
 	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  SID			  "66"
+	  Position		  [110, 168, 140, 182]
+	  ZOrder		  -1
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  RelationalOperator
+	  Name			  "Relational\nOperator"
+	  SID			  "69"
+	  Ports			  [2, 1]
+	  Position		  [350, 117, 380, 148]
+	  ZOrder		  -14
+	  Operator		  "~="
+	  InputSameDT		  off
+	  OutDataTypeStr	  "boolean"
+	}
+	Block {
 	  BlockType		  UnitDelay
 	  Name			  "Unit Delay"
 	  SID			  "59"
-	  Position		  [285, 78, 320, 112]
+	  Position		  [220, 78, 255, 112]
 	  ZOrder		  -21
 	  InputProcessing	  "Elements as channels (sample based)"
 	  SampleTime		  "-1"
@@ -899,7 +951,7 @@ Model {
 	  BlockType		  Outport
 	  Name			  "Out1"
 	  SID			  "39"
-	  Position		  [460, 88, 490, 102]
+	  Position		  [475, 128, 505, 142]
 	  ZOrder		  -2
 	  IconDisplay		  "Port number"
 	}
@@ -912,6 +964,20 @@ Model {
 	Line {
 	  SrcBlock		  "Unit Delay"
 	  SrcPort		  1
+	  Points		  [75, 0]
+	  DstBlock		  "Relational\nOperator"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  Points		  [190, 0]
+	  DstBlock		  "Relational\nOperator"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Relational\nOperator"
+	  SrcPort		  1
 	  DstBlock		  "Out1"
 	  DstPort		  1
 	}
@@ -921,7 +987,7 @@ Model {
       BlockType		      Outport
       Name		      "Out1"
       SID		      "2"
-      Position		      [805, 113, 835, 127]
+      Position		      [745, 113, 775, 127]
       ZOrder		      -23
       IconDisplay	      "Port number"
     }
@@ -945,22 +1011,34 @@ Model {
     }
     Line {
       Name		      "signalB"
-      Labels		      [0, 0]
+      Labels		      [1, 1]
       SrcBlock		      "Subsystem"
       SrcPort		      1
       DstBlock		      "Add"
       DstPort		      1
     }
     Line {
+      Name		      "A"
+      Labels		      [1, 1]
       SrcBlock		      "Gain"
       SrcPort		      1
       DstBlock		      "Goto0"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "From1"
+      Name		      "A"
+      Labels		      [1, 1]
+      SrcBlock		      "From0"
       SrcPort		      1
       DstBlock		      "Add"
+      DstPort		      2
+    }
+    Line {
+      Name		      "A"
+      Labels		      [0, 0]
+      SrcBlock		      "From1"
+      SrcPort		      1
+      DstBlock		      "Subsystem"
       DstPort		      2
     }
   }
