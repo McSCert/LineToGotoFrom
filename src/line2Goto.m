@@ -12,9 +12,6 @@ function line2Goto(address, line, tag)
 %                                   % the current Simulink system to goto/from
 %                                   % blocks with tag 'NewLine'
     
-    % Parameters - Can be changed by user
-    RESIZE_BLOCK = true; % Resize blocks to accomodate tags. Can be done dynamically or to a static value
-    
     % Check address argument A
     % 1) Check that model at address is open
     try
@@ -132,10 +129,6 @@ function line2Goto(address, line, tag)
     % Get the line's source and destination blocks' ports
     srcPort = get_param(line, 'SrcPortHandle');
     dstPort = get_param(line, 'DstPortHandle');
-   
-    % Delete signal name label
-    % Note: Branched signals will all have the same name
-    set_param(line, 'Name', '');
     
     % Delete line (multiple line segments in the case of branching)
     for i = 1:length(dstPort)
@@ -198,6 +191,7 @@ function line2Goto(address, line, tag)
     end
     
     % Resize blocks to accomodate tags
+    RESIZE_BLOCK = getLine2GotoConfig('resize_block', 1);
     if RESIZE_BLOCK
         resizeGotoFrom(newGoto);
         for m = 1:numOfFroms
@@ -208,11 +202,13 @@ function line2Goto(address, line, tag)
     % Connect blocks with signal lines 
     % Note: Should be done after block placement is done
     newGotoPort = get_param(newGoto, 'PortHandles');
-    add_line(address, srcPort, newGotoPort.Inport, 'autorouting', 'on');
+    newLine = add_line(address, srcPort, newGotoPort.Inport, 'autorouting', 'on');
+    set_param(newLine, 'Name', tag);
     
     for n = 1:numOfFroms
         newFromPort = get_param(newFrom(n), 'PortHandles');
-        add_line(address, newFromPort.Outport, dstPort(n), 'autorouting', 'on');
+        newLine = add_line(address, newFromPort.Outport, dstPort(n), 'autorouting', 'on');
+        set_param(newLine, 'Name', tag);
     end
 end
 
@@ -220,8 +216,8 @@ function moveToPort(block, port, onLeft)
 %% moveToImport Move a block to the right/left of a block port
 %	moveToPort(B, P, 0) Moves a block B to the right of port P
 
-    % Parameters - Can be changed by user
-    BLOCK_OFFSET = 25;	% Distance between goto/froms and the blocks they are connected to
+    % Get parameters from configuration file
+    BLOCK_OFFSET = getLine2GotoConfig('block_offset', 25);
 
     % Get block's current position
     blockPosition = get_param(block, 'Position');
@@ -253,10 +249,10 @@ function resizeGotoFrom(block)
 %% resizeLengthGotoFrom Resize a goto/from block to fit its tag
 %   resizeLengthGotoFrom(B) Resizes goto/from block B according to its tag
 
-    % Parameters - Can be changed by user
-    STATIC_RESIZE = false;   % Resize blocks to the STATIC_SIZE value. If false, blocks are dynamically resized
-    STATIC_LENGTH = 140;
-    PX_PER_LETTER = 9;	% Number of pixels to allocate. On average this is sufficient 
+    % Get parameters from configuration file
+    STATIC_RESIZE = getLine2GotoConfig('static_resize', 1);
+    STATIC_LENGTH = getLine2GotoConfig('static_length', 140);
+    PX_PER_LETTER = getLine2GotoConfig('px_per_letter', 9);
 
     % Get the block information
     origBlockPosition = get_param(block, 'Position');

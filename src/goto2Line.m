@@ -13,10 +13,6 @@ function goto2Line(address, blocks)
 %   goto2Line(gcs, {gcb})       % converts the currently selected block in 
 %                               % the current Simulink system
 
-    % Parameters - Can be changed by user
-    LINE_ROUTING = true;     % true = route line around blocks
-                             % false = route line with diagonal lines
-    
     % Check address argument A
 	% 1) Check model at address is open
     try
@@ -125,6 +121,7 @@ function goto2Line(address, blocks)
         gotoPortHandle = gotoPortHandle{1}.Inport(1);
 
         % Delete signal line and goto
+        deletedLineName = get_param(lineStartPortHandle, 'Name'); % Save for later
         delete_line(address, lineStartPortHandle, gotoPortHandle)
         delete_block(gotos);
 
@@ -154,15 +151,24 @@ function goto2Line(address, blocks)
             delete_block(froms{z})
 
             % Connect block ports with line
+            LINE_ROUTING = getLine2GotoConfig('line_routing', 1);
             if LINE_ROUTING
                 for c = 1:length(fromDstPortHandle)
                     if ishandle(lineStartPortHandle) && ishandle(fromDstPortHandle(c))
-                        add_line(address, lineStartPortHandle, fromDstPortHandle(c), 'autorouting', 'on');
+                        a = add_line(address, lineStartPortHandle, fromDstPortHandle(c), 'autorouting', 'on');
+                        % If the line had no name, use the block's tag
+                        if isempty(deletedLineName)
+                            set_param(a, 'Name', tag);
+                        end
                     end
                 end
             else
                 for d = 1:length(fromDstPortHandle)
-                    add_line(address, lineStartPortHandle, fromDstPortHandle(d));
+                    a = add_line(address, lineStartPortHandle, fromDstPortHandle(d));
+                    % If the line had no name, use the block's tag
+                    if isempty(deletedLineName)
+                        set_param(a, 'Name', tag);
+                    end
                 end
             end
         end
