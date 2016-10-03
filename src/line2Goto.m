@@ -129,7 +129,10 @@ function line2Goto(address, line, tag)
     % Get the line's source and destination blocks' ports
     srcPort = get_param(line, 'SrcPortHandle');
     dstPort = get_param(line, 'DstPortHandle');
-    
+   
+    % Get signal name before deleting
+    signalName = get_param(line, 'Name'); 
+
     % Delete line (multiple line segments in the case of branching)
     for i = 1:length(dstPort)
       delete_line(address, srcPort, dstPort(i));
@@ -198,17 +201,19 @@ function line2Goto(address, line, tag)
             resizeGotoFrom(newFrom(m));
         end
     end
-    
+    	
     % Connect blocks with signal lines 
     % Note: Should be done after block placement is done
     newGotoPort = get_param(newGoto, 'PortHandles');
     newLine = add_line(address, srcPort, newGotoPort.Inport, 'autorouting', 'on');
-    set_param(newLine, 'Name', tag);
-    
+
+    FROM_NAMING = getLine2GotoConfig('from_naming', 1);
     for n = 1:numOfFroms
         newFromPort = get_param(newFrom(n), 'PortHandles');
         newLine = add_line(address, newFromPort.Outport, dstPort(n), 'autorouting', 'on');
-        set_param(newLine, 'Name', tag);
+        if FROM_NAMING
+            set_param(newLine, 'Name', signalName);
+        end
     end
 end
 

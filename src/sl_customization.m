@@ -50,15 +50,41 @@ function line2GotoCallback(callbackInfo)
     
     % For each trunk line
 	for j = 1:length(trunkLines)
+        % Get signal name
         line = trunkLines{j};
         signalName = get_param(line, 'Name'); 
         
-        % If the signal line has no name
-        if isempty(signalName) || ~isvarname(signalName)
-            signalName = gotoGUI;    % Ask user for a name
+        % Get propogated signal name        
+        signalSrcPort = get_param(line, 'SrcPortHandle');
+        propagated_signalName = get_param(signalSrcPort, 'PropagatedSignals');
+               
+        % Use signal name when available. If you can't, use the propagated
+        % signal name. If you can't, prompt the user to enter a new name.
+        if ~isempty(signalName) && isvarname(signalName)
+            % Use signal name
+        elseif isempty(signalName) && isempty(propagated_signalName)
+            signalName = gotoGUI;  
+        elseif ~isempty(signalName) && ~isvarname(signalName) && isempty(propagated_signalName)
+             disp(['Warning using ' mfilename ':' char(10) ...
+                ' Signal name "', signalName, '" is not a valid name. Prompting user for new name.']) 
+            signalName = gotoGUI;  
+        elseif isempty(signalName) && (~isempty(propagated_signalName) && isvarname(propagated_signalName))
+            signalName = propagated_signalName;
+        elseif isempty(signalName) && (~isempty(propagated_signalName) && ~isvarname(propagated_signalName))
+             disp(['Warning using ' mfilename ':' char(10) ...
+                ' Propagated signal name "', propagated_signalName, '" is not a valid name. Prompting user for new name.']) 
+            signalName = gotoGUI;  
+        elseif (~isempty(signalName) && ~isvarname(signalName)) && (~isempty(propagated_signalName) && isvarname(propagated_signalName))
+            disp(['Warning using ' mfilename ':' char(10) ...
+                ' Signal name "', signalName, '" is not a valid name. Using propagated signal name instead.']) 
+            signalName = propagated_signalName;
+        elseif (~isempty(signalName) && ~isvarname(signalName)) && (~isempty(propagated_signalName) && ~isvarname(propagated_signalName))
+            disp(['Warning using ' mfilename ':' char(10) ...
+                ' Signal name "', signalName , '" and propagated signal name "', propagated_signalName, '" are not valid variable names. Prompting user for new name.'])
+            signalName = gotoGUI; 
         end
-        
-        if isempty(signalName)   % Dialog was closed, so stop transformation
+
+        if isempty(signalName)   % GUI gialog was closed, so stop transformation
             return
         else    % Valid name was provided (GUI checks it is valid)
             % Check for conflicts with existing gotos with the same name

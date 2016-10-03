@@ -156,19 +156,11 @@ function goto2Line(address, blocks)
                 for c = 1:length(fromDstPortHandle)
                     if ishandle(lineStartPortHandle) && ishandle(fromDstPortHandle(c))
                         a = add_line(address, lineStartPortHandle, fromDstPortHandle(c), 'autorouting', 'on');
-                        % If the line had no name, use the block's tag
-                        if isempty(deletedLineName)
-                            set_param(a, 'Name', tag);
-                        end
                     end
                 end
             else
                 for d = 1:length(fromDstPortHandle)
                     a = add_line(address, lineStartPortHandle, fromDstPortHandle(d));
-                    % If the line had no name, use the block's tag
-                    if isempty(deletedLineName)
-                        set_param(a, 'Name', tag);
-                    end
                 end
             end
         end

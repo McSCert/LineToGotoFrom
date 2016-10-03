@@ -62,3 +62,12 @@ block_offset: 25
 #	0		to route lines with diagonal lines
 #
 line_routing: 1
+
+# FROM_NAMING Enables or disables the naming of signal names out of new 
+# From blocks to match the signal name given into the associated Goto block.
+# 
+# Acceptable parameter values are:
+#	1 		to name signals out of From block(s)
+#	0		to leave signal name empty
+#
+from_naming: 0
