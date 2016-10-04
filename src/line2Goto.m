@@ -207,12 +207,17 @@ function line2Goto(address, line, tag)
     newGotoPort = get_param(newGoto, 'PortHandles');
     newLine = add_line(address, srcPort, newGotoPort.Inport, 'autorouting', 'on');
 
-    FROM_NAMING = getLine2GotoConfig('from_naming', 1);
+    FROM_SIGNAL_NAMING = getLine2GotoConfig('from_signal_naming', 0);
+    FROM_SIGNAL_PROPAGATION = getLine2GotoConfig('from_signal_propagation', 0);
+    
     for n = 1:numOfFroms
         newFromPort = get_param(newFrom(n), 'PortHandles');
         newLine = add_line(address, newFromPort.Outport, dstPort(n), 'autorouting', 'on');
-        if FROM_NAMING
+        if FROM_SIGNAL_NAMING
             set_param(newLine, 'Name', signalName);
+        end
+        if FROM_SIGNAL_PROPAGATION
+            set(newLine, 'SignalPropagation', 'on');
         end
     end
 end
