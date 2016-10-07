@@ -40,7 +40,7 @@ static_length: 140
 #   length(gotoTag) * PX_PER_LETTER;
 # 
 # Acceptable parameter values are:
-#	1 - 30000 		the static length of a Goto/From block, in pixels
+#	1 - 100 		the static length of a Goto/From block, in pixels
 #
 px_per_letter: 9
 
