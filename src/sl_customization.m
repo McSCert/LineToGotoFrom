@@ -48,6 +48,18 @@ function line2GotoCallback(callbackInfo)
         end
     end
     
+    % Check that library is unlocked
+    try
+        assert(strcmp(get_param(bdroot(get_param(trunkLines{1}, 'Parent')), 'Lock'), 'off'));
+    catch ME
+        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+                strcmp(ME.identifier, 'MATLAB:assertion:failed')
+            disp(['Error using ' mfilename ':' char(10) ...
+                ' File is locked.'])
+            return
+        end
+    end
+    
     % For each trunk line
 	for j = 1:length(trunkLines)
         % Get signal name
@@ -162,7 +174,7 @@ function line2GotoCallback(callbackInfo)
             end              
         end
         if ~isempty(signalName) % Ensure name was provided in the case "Change Name" was selected
-            line2Goto(gcs, line, signalName);   % Convert
+            line2Goto(get_param(line, 'Parent'), line, signalName);   % Convert
         else    % Dialog was closed, so skip
             set_param(line, 'Selected', 'off');
             continue;
