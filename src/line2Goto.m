@@ -140,9 +140,14 @@ function line2Goto(address, line, tag)
     
     % -- Add new goto/from blocks without using existing names --
     % First, check that block library is loaded
-    if ~bdIsLoaded('simulink')
-        load_system('simulink');
+    %%%%% FCA %%%%%
+    if ~bdIsLoaded('ChryslerLib')
+        load_system('ChryslerLib');
     end
+    %%%%% GENERAL %%%%%
+    %if ~bdIsLoaded('simulink')
+    %    load_system('simulink');
+    %end
     
 	numOfFroms = length(dstPort);   % To avoid recomputing
         
@@ -152,7 +157,10 @@ function line2Goto(address, line, tag)
     while error
 		error = false;
         try 
-            newGoto = add_block('simulink/Signal Routing/Goto', [address '/Goto' num2str(num)]);
+            %%%%% GENERAL %%%%%
+            %newGoto = add_block('simulink/Signal Routing/Goto', [address '/Goto' num2str(num)]);
+            %%%%% FCA %%%%%
+            newGoto = add_block('ChryslerLib/Signals/Goto', [address '/Goto' num2str(num)]);
         catch ME
             % If a block already exists with the same name
             if strcmp(ME.identifier, 'Simulink:Commands:AddBlockCantAdd')
@@ -169,7 +177,10 @@ function line2Goto(address, line, tag)
         while error
             error = false;
             try
-                newFrom(j) = add_block('simulink/Signal Routing/From', [address '/From' num2str(num+j-1)]);
+                %%%%% GENERAL %%%%%
+                %newFrom(j) = add_block('simulink/Signal Routing/From', [address '/From' num2str(num+j-1)]);
+                %%%%% FCA %%%%%
+                newFrom(j) = add_block('ChryslerLib/Signals/From', [address '/From' num2str(num+j-1)]);
             catch ME
                 if strcmp(ME.identifier, 'Simulink:Commands:AddBlockCantAdd')
                     num = num + 1;  % Try next name
