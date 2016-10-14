@@ -138,8 +138,8 @@ function line2Goto(address, line, tag)
       delete_line(address, srcPort, dstPort(i));
     end
     
-    % Add new goto/from blocks without using existing names
-    % First, check that custom block library is loaded
+    % -- Add new goto/from blocks without using existing names --
+    % First, check that block library is loaded
     
     %%%%% FCA %%%%%
     if ~bdIsLoaded('ChryslerLib')
@@ -148,7 +148,7 @@ function line2Goto(address, line, tag)
     %%%%% GENERAL %%%%%
     %if ~bdIsLoaded('simulink')
     %    load_system('simulink');
-   % end
+    %end
     
 	numOfFroms = length(dstPort);   % To avoid recomputing
         
