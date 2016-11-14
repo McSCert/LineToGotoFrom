@@ -37,7 +37,6 @@ function schema = Line2GotoSchema(callbackInfo)
 end
 
 function line2GotoCallback(callbackInfo)   
-	
     allLines = gcls;
     
     % Get lines that are trunk lines (Important for branches)
