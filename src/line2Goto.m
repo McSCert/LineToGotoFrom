@@ -232,7 +232,7 @@ function line2Goto(address, line, tag)
 end
 
 function moveToPort(block, port, onLeft)
-%% moveToImport Move a block to the right/left of a block port
+%% moveToPort Move a block to the right/left of a block port
 %	moveToPort(B, P, 0) Moves a block B to the right of port P
 
     % Get parameters from configuration file
