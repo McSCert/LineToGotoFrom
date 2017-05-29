@@ -35,6 +35,8 @@ static_length: 140
 # PX_PER_LETTER The number of pixels to allocate per letter of a Goto/From
 # tag, that the block will be resized to. This parameter is used when 
 # STATIC_RESIZE is disabled (i.e., for the dynamic resizing scheme).
+# Note that if the new size of the tag is less than the original default
+# size of the block, it will not be resized to be smaller than this value.
 #
 # The dynamic length of a Goto/From block is determined by:
 #   length(gotoTag) * PX_PER_LETTER;
