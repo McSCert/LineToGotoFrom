@@ -5,14 +5,13 @@ end
 
 %% Define custom menu function
 function schemaFcns = getMcMasterTool(callbackInfo) 
+    schemaFcns = {};
     if (strcmp(get_param(gcb, 'BlockType'), 'Goto') || ...
         strcmp(get_param(gcb, 'BlockType'), 'From')) && ...
         strcmp(get_param(gcb, 'Selected'), 'on')
-        schemaFcns = {@Goto2LineSchema};
+        schemaFcns{end+1} = @Goto2LineSchema;
     elseif ~isempty(gcls)
-        schemaFcns = {@Line2GotoSchema};
-    else
-        schemaFcns = {};
+        schemaFcns{end+1} = @Line2GotoSchema;
     end
 end
 
