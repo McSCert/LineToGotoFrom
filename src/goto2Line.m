@@ -1,17 +1,19 @@
 function goto2Line(address, blocks)
-% goto2Line Convert selected local goto/from block connections into signal lines.
-%   goto2Line(A, B) Converts goto/from blocks B at address A into signal
-%   lines, where:
-%       A is the Simulink system path
-%       B is a cell array of goto/from block path names
+% GOTO2LINE Convert selected local goto/from block connections into signal lines.
 %
-%   Example:
+%   Inputs:
+%       address     Simulink system path.
+%       blocks      Cell array of goto/from block path names.
 %
-%   goto2Line(gcs, gcbs)        % converts the currently selected blocks in 
-%                               % the current Simulink system
+%   Outputs:
+%       N/A
 %
-%   goto2Line(gcs, {gcb})       % converts the currently selected block in 
-%                               % the current Simulink system
+%   Examples:
+%       goto2Line(gcs, gcbs)        % converts the currently selected blocks in 
+%                                   % the current Simulink system
+%
+%       goto2Line(gcs, {gcb})       % converts the currently selected block in 
+%                                   % the current Simulink system
 
     % Check address argument A
 	% 1) Check model at address is open

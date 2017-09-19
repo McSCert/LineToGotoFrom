@@ -1,16 +1,15 @@
 function line2Goto(address, line, tag)
-% line2Goto Convert a signal line into a goto/from connection.
-%   line2Goto(A, L, T) Converts line L at address A to goto/from
-%   connections with tag T, where:
-%       A is the system path
-%       L is the line handle
-%       T is a valid variable name string
+% LINE2GOTO Convert a signal line into a goto/from connection.
 %
-%   Example:
+%   Inputs:
+%       address     Simulink system path.
+%       line        Line handle.
+%       tag         Valid variable name string.
 %
-%   line2Goto(gcs, gcls, 'NewLine') % converts the currently selected lines in 
-%                                   % the current Simulink system to goto/from
-%                                   % blocks with tag 'NewLine'
+%   Examples:
+%       line2Goto(gcs, gcls, 'NewLine') % converts the currently selected lines in 
+%                                       % the current Simulink system to goto/from
+%                                       % blocks with tag 'NewLine'
     
     % Check address argument A
     % 1) Check that model at address is open
@@ -232,8 +231,16 @@ function line2Goto(address, line, tag)
 end
 
 function moveToPort(block, port, onLeft)
-%% moveToPort Move a block to the right/left of a block port
-%	moveToPort(B, P, 0) Moves a block B to the right of port P
+%% moveToPort Move a block to the right/left of a block port.
+%
+%   Inputs:
+%       block       Handle of the block to be moved.
+%       port        Handle of the port to align the block with.
+%       onLeft      Boolean indicating if the block is to be on the right(0) or
+%                   left(1) of the port.
+%
+%   Outputs:
+%       N/A
 
     % Get parameters from configuration file
     BLOCK_OFFSET = getLine2GotoConfig('block_offset', 25);
@@ -265,8 +272,13 @@ function moveToPort(block, port, onLeft)
 end
 
 function resizeGotoFrom(block)
-%% resizeLengthGotoFrom Resize a goto/from block to fit its tag
-%   resizeLengthGotoFrom(B) Resizes goto/from block B according to its tag
+%% resizeLengthGotoFrom Resize a goto/from block to fit its tag.
+%
+%   Inputs:
+%       block       Handle of the block to be resized.
+%
+%   Outputs:
+%       N/A
 
     % Get parameters from configuration file
     STATIC_RESIZE = getLine2GotoConfig('static_resize', 1);

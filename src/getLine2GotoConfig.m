@@ -1,6 +1,13 @@
 function val = getLine2GotoConfig(parameter, default)
-%% getLine2GotoConfig Get a parameter from the tool configuration file
-%   getLine2GotoConfig(P, D) Returns the value of parameter P, or D if not found
+% GETLINE2GOTOCONFIG Get a parameter from the tool configuration file.
+%
+%   Inputs:
+%       parameter   Get the value of this paramter.
+%       default     Value if parameter is not found.
+%
+%   Outputs:
+%       val         Value of the parameter.
+
     val = default;
     filePath = mfilename('fullpath');
     name = mfilename;
