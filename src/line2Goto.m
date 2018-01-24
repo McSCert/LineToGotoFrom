@@ -139,26 +139,32 @@ function line2Goto(address, line, tag)
     
     % -- Add new goto/from blocks without using existing names --
     % First, check that block library is loaded
-    %%%% GENERAL %%%%%
+    %%%%% FCA %%%%%
+    %if ~bdIsLoaded('ChryslerLib')
+    %    load_system('ChryslerLib');
+    %end
+    %%%%% GENERAL %%%%%
     if ~bdIsLoaded('simulink')
-       load_system('simulink');
+        load_system('simulink');
     end
     
-	numOfFroms = length(dstPort);   % To avoid recomputing
+    numOfFroms = length(dstPort);   % To avoid recomputing
         
     % Add goto block
     num = 0;
     error = true;
     while error
-		error = false;
+        error = false;
         try 
-            %%%% GENERAL %%%%%
+            %%%%% GENERAL %%%%%
             newGoto = add_block('simulink/Signal Routing/Goto', [address '/Goto' num2str(num)]);
+            %%%%% FCA %%%%%
+            %newGoto = add_block('ChryslerLib/Signals/Goto', [address '/Goto' num2str(num)]);
         catch ME
             % If a block already exists with the same name
             if strcmp(ME.identifier, 'Simulink:Commands:AddBlockCantAdd')
-				num = num + 1;  % Try next name
-				error = true; 
+                num = num + 1;  % Try next name
+                error = true; 
             end     
         end
     end
@@ -170,8 +176,10 @@ function line2Goto(address, line, tag)
         while error
             error = false;
             try
-                %%%% GENERAL %%%%%
+                %%%%% GENERAL %%%%%
                 newFrom(j) = add_block('simulink/Signal Routing/From', [address '/From' num2str(num+j-1)]);
+                %%%%% FCA %%%%%
+                %newFrom(j) = add_block('ChryslerLib/Signals/From', [address '/From' num2str(num+j-1)]);
             catch ME
                 if strcmp(ME.identifier, 'Simulink:Commands:AddBlockCantAdd')
                     num = num + 1;  % Try next name
@@ -188,7 +196,7 @@ function line2Goto(address, line, tag)
     end
 
     % Reposition blocks
-	moveToPort(newGoto, srcPort, 0);
+    moveToPort(newGoto, srcPort, 0);
     for l = 1:numOfFroms
         moveToPort(newFrom(l), dstPort(l), 1);
     end
@@ -201,7 +209,7 @@ function line2Goto(address, line, tag)
             resizeGotoFrom(newFrom(m));
         end
     end
-    	
+        
     % Connect blocks with signal lines 
     % Note: Should be done after block placement is done
     newGotoPort = get_param(newGoto, 'PortHandles');
