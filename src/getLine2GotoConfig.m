@@ -15,7 +15,7 @@ function val = getLine2GotoConfig(parameter, default)
     fileName = [filePath 'config.txt'];
     file = fopen(fileName);
     line = fgetl(file);
-   
+
     paramPattern = ['^' parameter  ':[ ]*[0-9]+'];
 
     while ischar(line)

@@ -9,4 +9,3 @@ function sels = gcbs
     idx = strcmp(get_param(nBlks, 'selected'), 'on');
     sels = nBlks(idx);
 end
-

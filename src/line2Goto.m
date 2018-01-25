@@ -7,10 +7,10 @@ function line2Goto(address, line, tag)
 %       tag         Valid variable name string.
 %
 %   Examples:
-%       line2Goto(gcs, gcls, 'NewLine') % converts the currently selected lines in 
+%       line2Goto(gcs, gcls, 'NewLine') % converts the currently selected lines in
 %                                       % the current Simulink system to goto/from
 %                                       % blocks with tag 'NewLine'
-    
+
     % Check address argument A
     % 1) Check that model at address is open
     try
@@ -27,7 +27,7 @@ function line2Goto(address, line, tag)
     try
         assert(strcmp(get_param(bdroot(address), 'Lock'), 'off'));
     catch ME
-        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
             disp(['Error using ' mfilename ':' char(10) ...
                 ' File is locked.'])
@@ -39,20 +39,20 @@ function line2Goto(address, line, tag)
             return
         end
     end
-    
+
     % 3) Check that blocks aren't in a linked library
     try
         assert(strcmp(get_param(address, 'LinkStatus'), 'none') || ...
         strcmp(get_param(address, 'LinkStatus'), 'inactive'));
     catch ME
-        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
             disp(['Error using ' mfilename ':' char(10) ...
                 ' Cannot modify blocks within a linked library.'])
             return
         end
     end
-    
+
     % Check line argument L
     % 1) Check that a value was provided
     % 2) Check that it is a valid handle to an object
@@ -67,15 +67,15 @@ function line2Goto(address, line, tag)
         help(mfilename)
         return
     end
-    
+
    % Check tag argument T
    % 1) Check type
     try
         assert(ischar(tag));
     catch ME
-        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            disp(['Error using ' mfilename ':' char(10) ... 
+            disp(['Error using ' mfilename ':' char(10) ...
                 ' Invalid goto/from tag provided. Tag must be a char.'])
             return
         end
@@ -84,16 +84,16 @@ function line2Goto(address, line, tag)
    try
         assert(isvarname(tag));
     catch ME
-        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            disp(['Error using ' mfilename ':' char(10) ... 
+            disp(['Error using ' mfilename ':' char(10) ...
                 ' The goto/from tag provided is not a valid identifier. ' ...
                 'Identifiers start with a letter, contain no spaces or ' ...
                 'special characters and are at most 63 characters long.'])
             return
         end
    end
-   
+
     % Check for conflicts with existing gotos with the same name
     conflictLocalGotos = find_system(address, 'SearchDepth', 1, 'BlockType', 'Goto', 'GotoTag', tag);
 
@@ -101,22 +101,22 @@ function line2Goto(address, line, tag)
 
     allScopedGotos = find_system(bdroot, 'BlockType', 'Goto', 'TagVisibility', 'scoped', 'GotoTag', tag);
     belowScopedGotos = find_system(address, 'BlockType', 'Goto', 'TagVisibility', 'scoped', 'GotoTag', tag);
-    conflictsScopedGotos = setdiff(allScopedGotos, belowScopedGotos);  
-   
+    conflictsScopedGotos = setdiff(allScopedGotos, belowScopedGotos);
+
     if ~isempty(conflictLocalGotos)
         disp(['Warning using ' mfilename ':' char(10) ...
             ' Goto block "', tag, '" already exists locally:'])
         disp(conflictLocalGotos)
     elseif ~isempty(conflictsGlobalGotos)
          disp(['Warning using ' mfilename ':' char(10) ...
-             ' Goto block "' tag '" overlaps with existing global goto:'])  
+             ' Goto block "' tag '" overlaps with existing global goto:'])
          disp(conflictsGlobalGotos)
     elseif ~isempty(conflictsScopedGotos)
          disp(['Warning using ' mfilename ':' char(10) ...
             ' Goto block "' tag '" overlaps with existing scoped goto(s):'])
         disp(conflictsScopedGotos)
     end
-    
+
     % Check for conflicts with existing froms with the same name
     conflictLocalFroms = find_system(address, 'SearchDepth', 1, 'BlockType', 'From', 'GotoTag', tag);
     if ~isempty(conflictLocalFroms) && isempty(conflictLocalGotos)
@@ -124,19 +124,19 @@ function line2Goto(address, line, tag)
             ' From block "', tag, '" already exists locally:'])
         disp(conflictLocalFroms)
     end
-    
+
     % Get the line's source and destination blocks' ports
     srcPort = get_param(line, 'SrcPortHandle');
     dstPort = get_param(line, 'DstPortHandle');
-   
+
     % Get signal name before deleting
-    signalName = get_param(line, 'Name'); 
+    signalName = get_param(line, 'Name');
 
     % Delete line (multiple line segments in the case of branching)
     for i = 1:length(dstPort)
       delete_line(address, srcPort, dstPort(i));
     end
-    
+
     % -- Add new goto/from blocks without using existing names --
     % First, check that block library is loaded
     %%%%% FCA %%%%%
@@ -147,15 +147,15 @@ function line2Goto(address, line, tag)
     if ~bdIsLoaded('simulink')
         load_system('simulink');
     end
-    
+
     numOfFroms = length(dstPort);   % To avoid recomputing
-        
+
     % Add goto block
     num = 0;
     error = true;
     while error
         error = false;
-        try 
+        try
             %%%%% GENERAL %%%%%
             newGoto = add_block('simulink/Signal Routing/Goto', [address '/Goto' num2str(num)]);
             %%%%% FCA %%%%%
@@ -164,14 +164,14 @@ function line2Goto(address, line, tag)
             % If a block already exists with the same name
             if strcmp(ME.identifier, 'Simulink:Commands:AddBlockCantAdd')
                 num = num + 1;  % Try next name
-                error = true; 
-            end     
+                error = true;
+            end
         end
     end
-    
+
     % Add from block(s)
     num = 0;
-    for j = 1:numOfFroms   
+    for j = 1:numOfFroms
         error = true;
         while error
             error = false;
@@ -186,9 +186,9 @@ function line2Goto(address, line, tag)
                     error = true;
                 end
             end
-        end     
+        end
     end
-    
+
     % Set block names
     set_param(newGoto, 'GotoTag', tag);
     for k = 1:numOfFroms
@@ -200,7 +200,7 @@ function line2Goto(address, line, tag)
     for l = 1:numOfFroms
         moveToPort(newFrom(l), dstPort(l), 1);
     end
-    
+
     % Resize blocks to accomodate tags
     RESIZE_BLOCK = getLine2GotoConfig('resize_block', 1);
     if RESIZE_BLOCK
@@ -209,15 +209,15 @@ function line2Goto(address, line, tag)
             resizeGotoFrom(newFrom(m));
         end
     end
-        
-    % Connect blocks with signal lines 
+
+    % Connect blocks with signal lines
     % Note: Should be done after block placement is done
     newGotoPort = get_param(newGoto, 'PortHandles');
     newLine = add_line(address, srcPort, newGotoPort.Inport, 'autorouting', 'on');
 
     FROM_SIGNAL_NAMING = getLine2GotoConfig('from_signal_naming', 0);
     FROM_SIGNAL_PROPAGATION = getLine2GotoConfig('from_signal_propagation', 0);
-    
+
     for n = 1:numOfFroms
         newFromPort = get_param(newFrom(n), 'PortHandles');
         newLine = add_line(address, newFromPort.Outport, dstPort(n), 'autorouting', 'on');
@@ -255,10 +255,10 @@ function moveToPort(block, port, onLeft)
     blockWidth = blockPosition(4) - blockPosition(2);
     blockLength = blockPosition(3) - blockPosition(1);
 
-    % Compute x dimensions   
-    if ~onLeft 
+    % Compute x dimensions
+    if ~onLeft
         newBlockPosition(1) = portPosition(1) + BLOCK_OFFSET;  % Left
-        newBlockPosition(3) = portPosition(1) + blockLength + BLOCK_OFFSET;    % Right 
+        newBlockPosition(3) = portPosition(1) + blockLength + BLOCK_OFFSET;    % Right
     else
         newBlockPosition(1) = portPosition(1) - blockLength - BLOCK_OFFSET;    % Left
         newBlockPosition(3) = portPosition(1) - BLOCK_OFFSET;  % Right
@@ -289,10 +289,10 @@ function resizeGotoFrom(block)
     origBlockPosition = get_param(block, 'Position');
     origLength = origBlockPosition(3) - origBlockPosition(1);
     tag = get_param(block, 'GotoTag');
-    
+
     newBlockPosition = origBlockPosition;
     newLength = origLength;
-    
+
     if STATIC_RESIZE
         newLength = STATIC_LENGTH;
     else % DYNAMIC
@@ -303,12 +303,12 @@ function resizeGotoFrom(block)
     end
 
     if strcmp(get_param(block, 'BlockType'), 'Goto')
-        newBlockPosition(3) = (origBlockPosition(3) - origLength) + newLength; 
+        newBlockPosition(3) = (origBlockPosition(3) - origLength) + newLength;
     elseif strcmp(get_param(block, 'BlockType'), 'From')
         newBlockPosition(1) = (origBlockPosition(1) + origLength) - newLength;
     else
         disp('Error: Attempt to resize an unsupported block');
     end
-    
+
     set_param(block, 'Position', newBlockPosition);
 end
