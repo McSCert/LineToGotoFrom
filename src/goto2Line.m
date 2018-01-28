@@ -2,29 +2,28 @@ function goto2Line(address, blocks)
 % GOTO2LINE Convert selected local goto/from block connections into signal lines.
 %
 %   Inputs:
-%       address     Simulink system name.
+%       address     Simulink system name or path.
 %       blocks      Cell array of goto/from block path names.
 %
 %   Outputs:
 %       N/A
 %
 %   Examples:
-%       goto2Line(gcs, gcbs)        % converts the currently selected blocks in
-%                                   % the current Simulink system
+%       goto2Line(gcs, gcbs)        
+%           Converts the currently selected blocks in the current Simulink
+%           system into line connections.
 %
-%       goto2Line(gcs, {gcb})       % converts the currently selected block in
-%                                   % the current Simulink system
+%       goto2Line(gcs, gcb)       
+%           Converts the currently selected block in the current Simulink
+%           system into a line connection.
 
-    % Check address argument A
-    % 1) Check model at address is open
+    % Check address argument
+    % 1) Check that model at address is open
     try
        assert(ischar(address));
        assert(bdIsLoaded(bdroot(address)));
     catch
-        disp(['Error using ' mfilename ':' char(10) ...
-            ' Invalid address argument A. Model may not be loaded or name is invalid.' char(10)])
-        help(mfilename)
-        return
+        error('Invalid address. Model may not be loaded or name is invalid.');
     end
 
     % 2) Check that library is unlocked
@@ -33,26 +32,22 @@ function goto2Line(address, blocks)
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' File is locked.'])
-            return
+            error('Model is locked.');
         end
     end
 
-    % 3) Check that blocks aren't in a linked library
+    % 3) Check that blocks are not in a linked library
     try
         assert(strcmp(get_param(address, 'LinkStatus'), 'none') || ...
-        strcmp(get_param(address, 'LinkStatus'), 'inactive'));
+            strcmp(get_param(address, 'LinkStatus'), 'inactive'));
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' Cannot modify blocks within a linked library.'])
-            return
+            error('Cannot modify blocks within a linked library.');
         end
     end
 
-    % Check blocks argument B
+    % Check blocks argument
     % 1) Check that each block is a goto block
     % 2) Check that its visibility is local
     tagsToConnect = {};
@@ -63,23 +58,16 @@ function goto2Line(address, blocks)
             tag = get_param(blocks{x}, 'GotoTag');
         catch ME
             if strcmp(ME.identifier, 'Simulink:Commands:ParamUnknown')
-                % If it doesn't have one, then wrong block type
-                disp(['Error using ' mfilename ':' char(10) ...
-                    ' A selected block is not a goto/from.'])
-                return
-            else
-                disp(['Error using ' mfilename ':' char(10) ...
-                    ' Invalid block argument B.' char(10)])
-                help(mfilename)
-                return
+                warning('A selected block is not a goto/from.');
+            else % Block is a char array (single block)
+                error('Invalid block.');
             end
         end
         % Check that visibility of goto/from is local
         if strcmp(get_param(blocks{x}, 'TagVisibility'), 'local')
             tagsToConnect{end+1} = tag; % Append to list
         else
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' A selected goto/from does not have a local scope.'])
+            warning(['Selected goto/from "' blocks{x} '" does not have a local scope.']);
         end
     end
 
@@ -93,19 +81,20 @@ function goto2Line(address, blocks)
         % Get the goto corresponding to the tag
         gotos = find_system(address, 'SearchDepth', 1, 'BlockType', 'Goto', 'GotoTag', tagsToConnect{y});
         if isempty(gotos)
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' From block ', tagsToConnect{y} , ' has no local matching goto block.'])
+            warning(['From block "', tagsToConnect{y} , ...
+                '" has no local matching goto block.']);
             continue
         elseif length(gotos) > 1
-            disp(['Warning using ' mfilename ':' char(10) ...
-                ' Multiple goto blocks with tag "', tagsToConnect{y} , '" exist. Some blocks may be unconnected.'])
+            msg = ['Multiple goto blocks with tag "', tagsToConnect{y} , ...
+                '" exist. Some blocks may be left unconnected.'];
+            warning(msg);
         end
 
         % Get the from(s) corresponding to the tag
         froms = find_system(address, 'SearchDepth', 1, 'BlockType', 'From', 'GotoTag', tagsToConnect{y});
         if isempty(froms)
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' Goto block ', tagsToConnect{y} , ' has no local matching from blocks.'])
+            warning(['From block "', tagsToConnect{y} , ...
+                '" has no local matching goto block.']);
             continue
         end
 

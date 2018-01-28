@@ -2,25 +2,22 @@ function line2Goto(address, line, tag)
 % LINE2GOTO Convert a signal line into a goto/from connection.
 %
 %   Inputs:
-%       address     Simulink system path.
+%       address     Simulink system name or path.
 %       line        Line handle.
 %       tag         Valid variable name string.
 %
 %   Examples:
-%       line2Goto(gcs, gcls, 'NewLine') % converts the currently selected lines in
-%                                       % the current Simulink system to goto/from
-%                                       % blocks with tag 'NewLine'
+%       line2Goto(gcs, gcls, 'NewLine') 
+%           Converts the currently selected lines in the current Simulink 
+%           system to goto/from blocks with the tag 'NewLine'.
 
-    % Check address argument A
+    % Check address argument
     % 1) Check that model at address is open
     try
-       assert(ischar(address));
-       assert(bdIsLoaded(bdroot(address)));
+        assert(ischar(address));
+        assert(bdIsLoaded(bdroot(address)));
     catch
-        disp(['Error using ' mfilename ':' char(10) ...
-            ' Invalid address argument A. Model may not be loaded or name is invalid.' char(10)])
-        help(mfilename)
-        return
+        error('Invalid address. Model may not be loaded or name is invalid.');
     end
 
     % 2) Check that library is unlocked
@@ -29,31 +26,24 @@ function line2Goto(address, line, tag)
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' File is locked.'])
-            return
+            error('Model is locked.')
         else
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' Invalid address argument A.' char(10)])
-            help(mfilename)
-            return
+            error('Invalid address.');
         end
     end
 
-    % 3) Check that blocks aren't in a linked library
+    % 3) Check that blocks are not in a linked library
     try
         assert(strcmp(get_param(address, 'LinkStatus'), 'none') || ...
         strcmp(get_param(address, 'LinkStatus'), 'inactive'));
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' Cannot modify blocks within a linked library.'])
-            return
+            error('Cannot modify blocks within a linked library.');
         end
     end
 
-    % Check line argument L
+    % Check line argument
     % 1) Check that a value was provided
     % 2) Check that it is a valid handle to an object
     % 3) Check that it is the handle for a line
@@ -62,22 +52,17 @@ function line2Goto(address, line, tag)
         assert(ishandle(line));
         assert(strcmp(get_param(line, 'Type'), 'line'));
     catch
-        disp(['Error using ' mfilename ':' char(10) ...
-            ' Invalid line argument L.' char(10)])
-        help(mfilename)
-        return
+        error('Invalid line argument.');
     end
 
-   % Check tag argument T
+   % Check tag argument
    % 1) Check type
     try
         assert(ischar(tag));
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' Invalid goto/from tag provided. Tag must be a char.'])
-            return
+            error('Invalid goto/from tag provided. Tag must be a char.')
         end
     end
    % 2) Check that it can be used as a variable name
@@ -86,11 +71,9 @@ function line2Goto(address, line, tag)
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' The goto/from tag provided is not a valid identifier. ' ...
+            error(['The goto/from tag provided is not a valid identifier. ' ...
                 'Identifiers start with a letter, contain no spaces or ' ...
                 'special characters and are at most 63 characters long.'])
-            return
         end
    end
 
@@ -104,24 +87,29 @@ function line2Goto(address, line, tag)
     conflictsScopedGotos = setdiff(allScopedGotos, belowScopedGotos);
 
     if ~isempty(conflictLocalGotos)
-        disp(['Warning using ' mfilename ':' char(10) ...
-            ' Goto block "', tag, '" already exists locally:'])
-        disp(conflictLocalGotos)
+        msg = ['Goto block "' tag '" already exists locally:' newline];
+        for i = 1:length(conflictLocalGotos)
+            msg = [msg, char(conflictLocalGotos(i)), newline];
+        end
+        warning(msg)
     elseif ~isempty(conflictsGlobalGotos)
-         disp(['Warning using ' mfilename ':' char(10) ...
-             ' Goto block "' tag '" overlaps with existing global goto:'])
-         disp(conflictsGlobalGotos)
+        msg = ['Goto block "' tag '" overlaps with existing global goto:' newline];
+        for i = 1:length(conflictsGlobalGotos)
+            msg = [msg, char(conflictsGlobalGotos(i)), newline];
+        end
+        warning(msg)
     elseif ~isempty(conflictsScopedGotos)
-         disp(['Warning using ' mfilename ':' char(10) ...
-            ' Goto block "' tag '" overlaps with existing scoped goto(s):'])
-        disp(conflictsScopedGotos)
+        msg = ['Goto block "' tag '" overlaps with existing scoped goto(s):' newline];
+        for i = 1:length(conflictsScopedGotos)
+            msg = [msg, char(conflictsScopedGotos(i)), newline];
+        end
+        warning(msg)
     end
 
     % Check for conflicts with existing froms with the same name
     conflictLocalFroms = find_system(address, 'SearchDepth', 1, 'BlockType', 'From', 'GotoTag', tag);
     if ~isempty(conflictLocalFroms) && isempty(conflictLocalGotos)
-        disp(['Warning using ' mfilename ':' char(10) ...
-            ' From block "', tag, '" already exists locally:'])
+        warning(['From block "', tag, '" already exists locally:'])
         disp(conflictLocalFroms)
     end
 
@@ -152,9 +140,9 @@ function line2Goto(address, line, tag)
 
     % Add goto block
     num = 0;
-    error = true;
-    while error
-        error = false;
+    err = true;
+    while err
+        err = false;
         try
             %%%%% GENERAL %%%%%
             newGoto = add_block('simulink/Signal Routing/Goto', [address '/Goto' num2str(num)]);
@@ -164,7 +152,7 @@ function line2Goto(address, line, tag)
             % If a block already exists with the same name
             if strcmp(ME.identifier, 'Simulink:Commands:AddBlockCantAdd')
                 num = num + 1;  % Try next name
-                error = true;
+                err = true;
             end
         end
     end
@@ -172,9 +160,9 @@ function line2Goto(address, line, tag)
     % Add from block(s)
     num = 0;
     for j = 1:numOfFroms
-        error = true;
-        while error
-            error = false;
+        err = true;
+        while err
+            err = false;
             try
                 %%%%% GENERAL %%%%%
                 newFrom(j) = add_block('simulink/Signal Routing/From', [address '/From' num2str(num+j-1)]);
@@ -183,7 +171,7 @@ function line2Goto(address, line, tag)
             catch ME
                 if strcmp(ME.identifier, 'Simulink:Commands:AddBlockCantAdd')
                     num = num + 1;  % Try next name
-                    error = true;
+                    err = true;
                 end
             end
         end
@@ -231,7 +219,7 @@ function line2Goto(address, line, tag)
 end
 
 function moveToPort(block, port, onLeft)
-%% moveToPort Move a block to the right/left of a block port.
+%% MOVETOPORT Move a block to the right/left of a block port.
 %
 %   Inputs:
 %       block       Handle of the block to be moved.
@@ -272,7 +260,7 @@ function moveToPort(block, port, onLeft)
 end
 
 function resizeGotoFrom(block)
-%% resizeLengthGotoFrom Resize a goto/from block to fit its tag.
+%% RESIZEGOTOFROM Resize a goto/from block to fit its tag.
 %
 %   Inputs:
 %       block       Handle of the block to be resized.
@@ -307,7 +295,7 @@ function resizeGotoFrom(block)
     elseif strcmp(get_param(block, 'BlockType'), 'From')
         newBlockPosition(1) = (origBlockPosition(1) + origLength) - newLength;
     else
-        disp('Error: Attempt to resize an unsupported block');
+        warning('Attempted to resize an unsupported block.');
     end
 
     set_param(block, 'Position', newBlockPosition);
