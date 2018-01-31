@@ -7,8 +7,8 @@ function line2Goto(address, line, tag)
 %       tag         Valid variable name string.
 %
 %   Examples:
-%       line2Goto(gcs, gcls, 'NewLine') 
-%           Converts the currently selected lines in the current Simulink 
+%       line2Goto(gcs, gcls, 'NewLine')
+%           Converts the currently selected lines in the current Simulink
 %           system to goto/from blocks with the tag 'NewLine'.
 
     % Check address argument
@@ -109,8 +109,11 @@ function line2Goto(address, line, tag)
     % Check for conflicts with existing froms with the same name
     conflictLocalFroms = find_system(address, 'SearchDepth', 1, 'BlockType', 'From', 'GotoTag', tag);
     if ~isempty(conflictLocalFroms) && isempty(conflictLocalGotos)
-        warning(['From block "', tag, '" already exists locally:'])
-        disp(conflictLocalFroms)
+        msg = ['From block "', tag, '" already exists locally:' newline];
+        for i = 1:length(conflictLocalFroms)
+            msg = [msg, char(conflictLocalFroms(i)), newline];
+        end
+        warning(msg)
     end
 
     % Get the line's source and destination blocks' ports
