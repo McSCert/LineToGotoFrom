@@ -4,7 +4,7 @@ function sl_customization(cm)
 end
 
 %% Define custom menu function
-function schemaFcns = getMcMasterTool(callbackInfo) 
+function schemaFcns = getMcMasterTool(callbackInfo)
     schemaFcns = {};
     if (strcmp(get_param(gcb, 'BlockType'), 'Goto') || ...
         strcmp(get_param(gcb, 'BlockType'), 'From')) && ...
@@ -35,9 +35,9 @@ function schema = Line2GotoSchema(callbackInfo)
     schema.callback = @line2GotoCallback;
 end
 
-function line2GotoCallback(callbackInfo)   
+function line2GotoCallback(callbackInfo)
     allLines = gcls;
-    
+
     % Get lines that are trunk lines (Important for branches)
     trunkLines = {};
     for i = 1:length(allLines)
@@ -45,59 +45,58 @@ function line2GotoCallback(callbackInfo)
             trunkLines{end+1} = allLines(i);
         end
     end
-    
+
     % Check that library is unlocked
     try
         assert(strcmp(get_param(bdroot(get_param(trunkLines{1}, 'Parent')), 'Lock'), 'off'));
     catch ME
-        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ... 
+        if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' File is locked.'])
+            error('File is locked.')
             return
         end
     end
-    
+
     % For each trunk line
 	for j = 1:length(trunkLines)
         % Get signal name
         line = trunkLines{j};
-        signalName = get_param(line, 'Name'); 
-        
-        % Get propogated signal name        
+        signalName = get_param(line, 'Name');
+
+        % Get propogated signal name
         signalSrcPort = get_param(line, 'SrcPortHandle');
         propagated_signalName = get_param(signalSrcPort, 'PropagatedSignals');
-               
+
         % Use signal name when available. If you can't, use the propagated
         % signal name. If you can't, prompt the user to enter a new name.
         if ~isempty(signalName) && isvarname(signalName)
             % Use signal name
         elseif isempty(signalName) && isempty(propagated_signalName)
-            signalName = gotoGUI;  
+            signalName = gotoGUI;
         elseif ~isempty(signalName) && ~isvarname(signalName) && isempty(propagated_signalName)
              warning(['Signal name "', signalName, ...
-                 '" is not a valid name. Prompting user for new name.']) 
-            signalName = gotoGUI;  
+                 '" is not a valid name. Prompting user for new name.'])
+            signalName = gotoGUI;
         elseif isempty(signalName) && (~isempty(propagated_signalName) ...
                 && isvarname(propagated_signalName))
             signalName = propagated_signalName;
         elseif isempty(signalName) && (~isempty(propagated_signalName) ...
                 && ~isvarname(propagated_signalName))
              warning(['Propagated signal name "', propagated_signalName, ...
-                 '" is not a valid name. Prompting user for new name.']) 
-            signalName = gotoGUI;  
+                 '" is not a valid name. Prompting user for new name.'])
+            signalName = gotoGUI;
         elseif (~isempty(signalName) && ~isvarname(signalName)) ...
                 && (~isempty(propagated_signalName) ...
                 && isvarname(propagated_signalName))
             warning(['Signal name "', signalName, ...
-                '" is not a valid name. Using propagated signal name instead.']) 
+                '" is not a valid name. Using propagated signal name instead.'])
             signalName = propagated_signalName;
         elseif (~isempty(signalName) && ~isvarname(signalName)) ...
                 && (~isempty(propagated_signalName) ...
                 && ~isvarname(propagated_signalName))
             warning(['Signal name "', signalName , '" and propagated signal name "', ...
                 propagated_signalName, '" are not valid variable names. Prompting user for new name.'])
-            signalName = gotoGUI; 
+            signalName = gotoGUI;
         end
 
         if isempty(signalName)   % GUI gialog was closed, so stop transformation
@@ -118,7 +117,7 @@ function line2GotoCallback(callbackInfo)
                     char(10) 'Proceed with transformation?'], ...
                     'Line to Goto/Froms: Warning', ...
                     'Yes', 'Change Name', 'No', 'Change Name');
-                switch answer 
+                switch answer
                     case 'Yes'
                         % Use the provided tag
                     case 'Change Name'
@@ -131,15 +130,15 @@ function line2GotoCallback(callbackInfo)
                      case ''
                         % Skip this line, continue with the rest
                         set_param(line, 'Selected', 'off');
-                        continue  
-                end 
-            % 2) Check for global goto (anywhere in the model) conflicts 
+                        continue
+                end
+            % 2) Check for global goto (anywhere in the model) conflicts
             elseif ~isempty(conflictsGlobalGotos)
                 answer = questdlg(['A global goto named "' signalName '" already exists.' ...
                     char(10) ' Proceed with transformation?'], ...
                     'Line to Goto/Froms: Warning', ...
                     'Yes', 'Change Name', 'No', 'Change Name');
-                switch answer 
+                switch answer
                     case 'Yes'
                         % Use the provided tag
                     case 'Change Name'
@@ -152,7 +151,7 @@ function line2GotoCallback(callbackInfo)
                     case ''
                         % Skip this line, continue with the rest
                         set_param(line, 'Selected', 'off');
-                        continue  
+                        continue
                 end
             % 3) Check for scoped goto (current level and above) conflicts
             elseif ~isempty(conflictsScopedGotos)
@@ -160,7 +159,7 @@ function line2GotoCallback(callbackInfo)
                     char(10) ' Proceed with transformation?'], ...
                     'Line to Goto/Froms: Warning', ...
                     'Yes', 'Change Name', 'No', 'Change Name');
-                switch answer 
+                switch answer
                     case 'Yes'
                         % Use the provided tag
                     case 'Change Name'
@@ -173,9 +172,9 @@ function line2GotoCallback(callbackInfo)
                     case ''
                         % Skip this line, continue with the rest
                         set_param(line, 'Selected', 'off');
-                        continue   
+                        continue
                 end
-            end              
+            end
         end
         if ~isempty(signalName) % Ensure name was provided in the case "Change Name" was selected
             line2Goto(get_param(line, 'Parent'), line, signalName);   % Convert
