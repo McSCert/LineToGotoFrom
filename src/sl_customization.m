@@ -53,7 +53,7 @@ function line2GotoCallback(callbackInfo)
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
             error('File is locked.')
-            return
+
         end
     end
 
