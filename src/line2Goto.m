@@ -80,9 +80,9 @@ function line2Goto(address, line, tag)
     % Check for conflicts with existing gotos with the same name
     conflictLocalGotos = find_system(address, 'SearchDepth', 1, 'BlockType', 'Goto', 'GotoTag', tag);
 
-    conflictsGlobalGotos = find_system(bdroot, 'BlockType', 'Goto', 'TagVisibility', 'global', 'GotoTag', tag);
+    conflictsGlobalGotos = find_system(bdroot(address), 'BlockType', 'Goto', 'TagVisibility', 'global', 'GotoTag', tag);
 
-    allScopedGotos = find_system(bdroot, 'BlockType', 'Goto', 'TagVisibility', 'scoped', 'GotoTag', tag);
+    allScopedGotos = find_system(bdroot(address), 'BlockType', 'Goto', 'TagVisibility', 'scoped', 'GotoTag', tag);
     belowScopedGotos = find_system(address, 'BlockType', 'Goto', 'TagVisibility', 'scoped', 'GotoTag', tag);
     conflictsScopedGotos = setdiff(allScopedGotos, belowScopedGotos);
 
