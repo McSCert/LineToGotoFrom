@@ -38,14 +38,18 @@ end
 function line2GotoCallback(callbackInfo)
     allLines = gcls;
 
-    % Get lines that are trunk lines (Important for branches)
+    % Get lines that are trunk lines (important for branches)
     trunkLines = {};
     for i = 1:length(allLines)
-        if strcmp(get_param(allLines(i), 'SegmentType'),'trunk')
+        if strcmp(get_param(allLines(i), 'SegmentType'), 'trunk')
             trunkLines{end+1} = allLines(i);
+        elseif strcmp(get_param(allLines(i), 'SegmentType'), 'branch')
+            trunkLines{end+1} = get_param(allLines(i), 'LineParent');
         end
     end
-
+    % In case multiple branches of the same trunk are selected, get only unique
+    trunkLines = unique(cell2mat(trunkLines)); 
+    
     % Check that library is unlocked
     try
         assert(strcmp(get_param(bdroot(get_param(trunkLines{1}, 'Parent')), 'Lock'), 'off'));
@@ -53,14 +57,13 @@ function line2GotoCallback(callbackInfo)
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
             error('File is locked.')
-
         end
     end
 
     % For each trunk line
 	for j = 1:length(trunkLines)
         % Get signal name
-        line = trunkLines{j};
+        line = trunkLines(j);
         signalName = get_param(line, 'Name');
 
         % Get propogated signal name
