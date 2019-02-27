@@ -142,7 +142,7 @@ function goto2Line(address, blocks)
             delete_block(froms{z})
 
             % Connect block ports with line
-            LINE_ROUTING = getLine2GotoConfig('line_routing', 1);
+            LINE_ROUTING = getLine2GotoConfig('line_routing', 2);
             if (LINE_ROUTING == 2) && verLessThan('simulink', '7.14') % R2012b
                 LINE_ROUTING = 1;
             end
