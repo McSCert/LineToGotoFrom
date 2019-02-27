@@ -62,7 +62,7 @@ function line2Goto(address, line, tag)
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            error('Invalid goto/from tag provided. Tag must be a char.')
+            error('Invalid Goto/From tag provided. Tag must be a char.')
         end
     end
    % 2) Check that it can be used as a variable name
@@ -71,7 +71,7 @@ function line2Goto(address, line, tag)
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            error(['The goto/from tag provided is not a valid identifier. ' ...
+            error(['The Goto/From tag provided is not a valid identifier. ' ...
                 'Identifiers start with a letter, contain no spaces or ' ...
                 'special characters and are at most 63 characters long.'])
         end
@@ -93,13 +93,13 @@ function line2Goto(address, line, tag)
         end
         warning(msg)
     elseif ~isempty(conflictsGlobalGotos)
-        msg = ['Goto block "' tag '" overlaps with existing global goto:' newline];
+        msg = ['Goto block "' tag '" overlaps with existing global Goto:' newline];
         for i = 1:length(conflictsGlobalGotos)
             msg = [msg, char(conflictsGlobalGotos(i)), newline];
         end
         warning(msg)
     elseif ~isempty(conflictsScopedGotos)
-        msg = ['Goto block "' tag '" overlaps with existing scoped goto(s):' newline];
+        msg = ['Goto block "' tag '" overlaps with existing scoped Goto(s):' newline];
         for i = 1:length(conflictsScopedGotos)
             msg = [msg, char(conflictsScopedGotos(i)), newline];
         end
