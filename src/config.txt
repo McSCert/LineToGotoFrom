@@ -10,6 +10,8 @@
 #    1      to enable resizing of Goto/From block length
 #    0      to disable resizing of Goto/From block length
 #
+# Default is 1.
+#
 resize_block: 1
 
 # STATIC_RESIZE Enables or disables the ability to resize Goto/From block
@@ -22,6 +24,8 @@ resize_block: 1
 #    1      to select a static resizing scheme for Goto/From block length
 #    0      to select a dynamic resizing scheme for Goto/From block length
 #
+# Default is 0.
+#
 static_resize: 0
 
 # STATIC_LENGTH The number of pixels that Goto/From blocks are resized to
@@ -29,6 +33,8 @@ static_resize: 0
 #
 # Acceptable parameter values are:
 #    1 - 30000      the static length of a Goto/From block, in pixels
+#
+# Default is 140.
 #
 static_length: 140
 
@@ -44,6 +50,8 @@ static_length: 140
 # Acceptable parameter values are:
 #    1 - 100        the static length of a Goto/From block, in pixels
 #
+# Default is 9.
+#
 px_per_letter: 9
 
 # BLOCK_OFFSET The distance in pixels between Goto/From blocks and the
@@ -53,17 +61,23 @@ px_per_letter: 9
 #    0 - 30000      the static distance between a Goto/From block and its
 #                   connected block, in pixels
 #
+# Default is 25.
+#
 block_offset: 25
 
 # LINE_ROUTING Enables or disables 'autorouting' when adding new lines.
 # Enabling this will route lines around obstructing blocks, while disabling
-# it will draw lines directly. This can lead to diagonal lines.
+# it will draw lines directly. This can lead to diagonal lines. Smart routing is
+# availble in R2012b+.
 #
 # Acceptable parameter values are:
+#    2      to route lines around blocks using 'smart' routing (R2012b+)
 #    1      to route lines around blocks
 #    0      to route lines with diagonal lines
 #
-line_routing: 1
+# Default is 2.
+#
+line_routing: 2
 
 # FROM_SIGNAL_NAMING Enables or disables the naming of signal names out of new
 # From block(s) to match the input signal of the associated Goto block.
@@ -71,6 +85,8 @@ line_routing: 1
 # Acceptable parameter values are:
 #    1      to name signals out of From block(s)
 #    0      to leave signal name empty
+#
+# Default is 0.
 #
 from_signal_naming: 0
 
@@ -81,5 +97,7 @@ from_signal_naming: 0
 # Acceptable parameter values are:
 #    1      to propagate signals through From block(s)
 #    0      to not propagate signals through From block(s)
+#
+# Default is 0.
 #
 from_signal_propagation: 0

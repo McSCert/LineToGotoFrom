@@ -143,15 +143,25 @@ function goto2Line(address, blocks)
 
             % Connect block ports with line
             LINE_ROUTING = getLine2GotoConfig('line_routing', 1);
-            if LINE_ROUTING
+            if (LINE_ROUTING == 2) && verLessThan('simulink', '7.14') % R2012b
+                LINE_ROUTING = 1;
+            end
+
+            if LINE_ROUTING == 1 
                 for c = 1:length(fromDstPortHandle)
                     if ishandle(lineStartPortHandle) && ishandle(fromDstPortHandle(c))
                         a = add_line(address, lineStartPortHandle, fromDstPortHandle(c), 'autorouting', 'on');
                     end
                 end
-            else
+            elseif LINE_ROUTING == 2
                 for d = 1:length(fromDstPortHandle)
-                    a = add_line(address, lineStartPortHandle, fromDstPortHandle(d));
+                    if ishandle(lineStartPortHandle) && ishandle(fromDstPortHandle(d))
+                        a = add_line(address, lineStartPortHandle, fromDstPortHandle(d), 'autorouting', 'smart');
+                    end
+                end
+            else
+                for e = 1:length(fromDstPortHandle)
+                    a = add_line(address, lineStartPortHandle, fromDstPortHandle(e));
                 end
             end
         end
