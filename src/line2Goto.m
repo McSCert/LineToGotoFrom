@@ -7,8 +7,8 @@ function line2Goto(address, line, tag)
 %       tag         Valid variable name string.
 %
 %   Examples:
-%       line2Goto(gcs, gcls, 'NewLine')
-%           Converts the currently selected lines in the current Simulink
+%       line2Goto(gcs, gcl, 'NewLine')
+%           Converts the currently selected line in the current Simulink
 %           system to goto/from blocks with the tag 'NewLine'.
 
     % Check address argument
