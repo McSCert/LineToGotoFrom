@@ -1,9 +1,9 @@
 function goto2Line(address, blocks)
-% GOTO2LINE Convert selected local goto/from block connections into signal lines.
+% GOTO2LINE Convert local goto/from block connections into signal lines.
 %
 %   Inputs:
 %       address     Simulink system name or path.
-%       blocks      Cell array of goto/from block path names.
+%       blocks      Array of Goto or From block pathnames or handles.
 %
 %   Outputs:
 %       N/A
@@ -51,23 +51,31 @@ function goto2Line(address, blocks)
     % 1) Check that each block is a goto block
     % 2) Check that its visibility is local
     tagsToConnect = {};
+    if ~iscell(blocks)
+        blocks = {blocks};
+    end
     % For each selected block
     for x = 1:length(blocks)
         % Get its goto tag
+        invalidFlag = false;
         try
             tag = get_param(blocks{x}, 'GotoTag');
         catch ME
             if strcmp(ME.identifier, 'Simulink:Commands:ParamUnknown')
-                warning('A selected block is not a goto/from.');
+                % Warn, but continue to handle the rest of the blocks
+                warning(['The selected block ''' get_param(blocks{x}, 'Name') ''' is not a Goto/From.']);
+                invalidFlag = true;
             else % Block is a char array (single block)
-                error('Invalid block.');
+                error('Invalid input. Please provide a cell array or vector of pathnames/handles of Goto/From blocks.');
             end
         end
         % Check that visibility of goto/from is local
-        if strcmp(get_param(blocks{x}, 'TagVisibility'), 'local')
-            tagsToConnect{end+1} = tag; % Append to list
-        else
-            warning(['Selected goto/from "' blocks{x} '" does not have a local scope.']);
+        if ~invalidFlag
+            if strcmp(get_param(blocks{x}, 'TagVisibility'), 'local')
+                tagsToConnect{end+1} = tag; % Append to list
+            else
+                warning(['Selected Goto/From "' blocks{x} '" does not have a local scope.']);
+            end
         end
     end
 
@@ -85,7 +93,7 @@ function goto2Line(address, blocks)
                 '" has no local matching goto block.']);
             continue
         elseif length(gotos) > 1
-            msg = ['Multiple goto blocks with tag "', tagsToConnect{y} , ...
+            msg = ['Multiple Goto blocks with tag "', tagsToConnect{y} , ...
                 '" exist. Some blocks may be left unconnected.'];
             warning(msg);
         end
@@ -94,7 +102,7 @@ function goto2Line(address, blocks)
         froms = find_system(address, 'SearchDepth', 1, 'BlockType', 'From', 'GotoTag', tagsToConnect{y});
         if isempty(froms)
             warning(['From block "', tagsToConnect{y} , ...
-                '" has no local matching goto block.']);
+                '" has no local matching Goto block.']);
             continue
         end
 
