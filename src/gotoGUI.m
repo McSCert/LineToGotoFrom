@@ -22,7 +22,7 @@ function varargout = gotoGUI(varargin)
 
 % Edit the above text to modify the response to help gotoGUI
 
-% Last Modified by GUIDE v2.5 25-Apr-2016 15:15:20
+% Last Modified by GUIDE v2.5 01-Mar-2019 07:35:05
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -65,6 +65,9 @@ handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
+
+% Focus on textbox so user can just start typing
+uicontrol(handles.textboxTagName)
 
 % UIWAIT makes gotoGUI wait for user response (see UIRESUME)
 uiwait(handles.figure1);
@@ -124,6 +127,11 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+pause(.5)
+
+% Retrieve GUI data 
+handles = guidata(hObject);
+
 % Check that name provided is valid
 newName = get(handles.textboxTagName, 'String');
 if isvarname(newName)
@@ -153,6 +161,21 @@ end
 function figure1_KeyPressFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  structure with the following fields (see FIGURE)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+
+key = get(gcf,'CurrentKey');
+if (strcmp(key, 'return'))
+        pushbutton1_Callback(hObject, eventdata, handles)
+end
+
+
+% --- Executes on key press with focus on textboxTagName and none of its controls.
+function textboxTagName_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to textboxTagName (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
 %	Key: name of the key that was pressed, in lower case
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
