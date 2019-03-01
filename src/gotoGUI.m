@@ -22,7 +22,7 @@ function varargout = gotoGUI(varargin)
 
 % Edit the above text to modify the response to help gotoGUI
 
-% Last Modified by GUIDE v2.5 01-Mar-2019 07:35:05
+% Last Modified by GUIDE v2.5 01-Mar-2019 10:00:50
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -72,7 +72,6 @@ uicontrol(handles.textboxTagName)
 % UIWAIT makes gotoGUI wait for user response (see UIRESUME)
 uiwait(handles.figure1);
 
-
 % --- Outputs from this function are returned to the command line.
 function varargout = gotoGUI_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
@@ -95,7 +94,6 @@ varargout{1} = newName;
 % Close window
 delete(handles.figure1);
 
-
 function textboxTagName_Callback(hObject, eventdata, handles)
 % hObject    handle to textboxTagName (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -115,11 +113,8 @@ function textboxTagName_CreateFcn(hObject, eventdata, handles)
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-    
-    
+    set(hObject,'BackgroundColor','white');  
 end
-
 
 % --- Executes on button press in pushbutton1.
 function pushbutton1_Callback(hObject, eventdata, handles)
@@ -127,7 +122,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-pause(.5)
+pause(.1)
 
 % Retrieve GUI data 
 handles = guidata(hObject);
@@ -156,26 +151,10 @@ else
     delete(hFig);
 end
 
-
-% --- Executes on key press with focus on figure1 and none of its controls.
-function figure1_KeyPressFcn(hObject, eventdata, handles)
+% --- Executes on key press with focus on figure1 or any of its controls.
+function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
-% eventdata  structure with the following fields (see FIGURE)
-%	Key: name of the key that was pressed, in lower case
-%	Character: character interpretation of the key(s) that was pressed
-%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
-% handles    structure with handles and user data (see GUIDATA)
-
-key = get(gcf,'CurrentKey');
-if (strcmp(key, 'return'))
-        pushbutton1_Callback(hObject, eventdata, handles)
-end
-
-
-% --- Executes on key press with focus on textboxTagName and none of its controls.
-function textboxTagName_KeyPressFcn(hObject, eventdata, handles)
-% hObject    handle to textboxTagName (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+% eventdata  structure with the following fields (see MATLAB.UI.FIGURE)
 %	Key: name of the key that was pressed, in lower case
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
