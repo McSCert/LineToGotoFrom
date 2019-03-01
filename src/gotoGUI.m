@@ -122,8 +122,6 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-pause(.1)
-
 % Retrieve GUI data 
 handles = guidata(hObject);
 
@@ -162,5 +160,6 @@ function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
 
 key = get(gcf,'CurrentKey');
 if (strcmp(key, 'return'))
+        drawnow % Update handles struct
         pushbutton1_Callback(hObject, eventdata, handles)
 end
