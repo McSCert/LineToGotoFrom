@@ -151,7 +151,7 @@ function goto2Line(address, blocks)
 
             % Connect block ports with line
             LINE_ROUTING = getLine2GotoConfig('line_routing', 2);
-            if (LINE_ROUTING == 2) && verLessThan('simulink', '7.14') % R2012b
+            if (LINE_ROUTING == 2) && verLessThan('simulink', '8.9') 
                 LINE_ROUTING = 1;
             end
 

@@ -68,7 +68,7 @@ block_offset: 25
 # LINE_ROUTING Enables or disables 'autorouting' when adding new lines.
 # Enabling this will route lines around obstructing blocks, while disabling
 # it will draw lines directly. This can lead to diagonal lines. Smart routing is
-# availble in R2012b+.
+# availble in R2017a+.
 #
 # Acceptable parameter values are:
 #    2      to route lines around blocks using 'smart' routing (R2012b+)
