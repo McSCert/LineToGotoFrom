@@ -71,13 +71,13 @@ block_offset: 25
 # availble in R2017b+.
 #
 # Acceptable parameter values are:
-#    2      to route lines around blocks using 'smart' routing (R2017b+)
-#    1      to route lines around blocks
-#    0      to route lines with diagonal lines
+#    smart      to route lines around blocks using 'smart' routing (R2017b+)
+#    on      to route lines around blocks
+#    off      to route lines with diagonal lines
 #
-# Default is 2.
+# Default is smart.
 #
-line_routing: 2
+line_routing: smart
 
 # FROM_SIGNAL_NAMING Enables or disables the naming of signal names out of new
 # From block(s) to match the input signal of the associated Goto block.
