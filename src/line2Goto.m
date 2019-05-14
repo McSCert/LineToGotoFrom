@@ -1,10 +1,10 @@
 function line2Goto(address, line, tag)
-% LINE2GOTO Convert a signal line into a goto/from connection.
+% LINE2GOTO Convert a signal line into a Goto/From connection.
 %
 %   Inputs:
 %       address     Simulink system name or path.
 %       line        Line handle.
-%       tag         Valid variable name string.
+%       tag         Valid variable name char array.
 %
 %   Examples:
 %       line2Goto(gcs, gcl, 'NewLine')

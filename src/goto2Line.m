@@ -1,5 +1,5 @@
 function goto2Line(address, blocks)
-% GOTO2LINE Convert local goto/from block connections into signal lines.
+% GOTO2LINE Convert local Goto/From block connections into signal lines.
 %
 %   Inputs:
 %       address     Simulink system name or path.
