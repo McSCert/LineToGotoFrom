@@ -7,3 +7,4 @@
 
     InputHandling/
         getInput.m
+        iscellcell.m
