@@ -102,9 +102,9 @@ function line2GotoCallback(callbackInfo)
             signalName = gotoGUI;
         end
 
-        if isempty(signalName)   % GUI gialog was closed, so stop transformation
+        if isempty(signalName)   % GUI dialog was closed, so stop transformation
             return
-        else    % Valid name was provided (GUI checks it is valid)
+        else % Valid name was provided (GUI checks it is valid)
             % Check for conflicts with existing gotos with the same name
             conflictLocalGotos = find_system(gcs, 'SearchDepth', 1, 'BlockType', 'Goto', 'GotoTag', signalName);
 
