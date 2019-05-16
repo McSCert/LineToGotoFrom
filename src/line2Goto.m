@@ -6,6 +6,9 @@ function line2Goto(address, line, tag)
 %       line        Line handle.
 %       tag         Valid variable name char array.
 %
+%   Outputs:
+%       N/A
+%
 %   Examples:
 %       line2Goto(gcs, gcl, 'NewLine')
 %           Converts the currently selected line in the current Simulink
