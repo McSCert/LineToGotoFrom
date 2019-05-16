@@ -159,7 +159,7 @@ function line2Goto(address, line, tag)
             %%%%% FCA ePT %%%%%
             %newGoto = add_block('ChryslerLib/Signals/Goto', [address '/Goto' num2str(num)]);
             %%%%% FCA PMBD %%%%%
-            %newGoto = add_block('customlib/Default Simulink/Simulink Blocks/Goto', [address '/Goto' num2str(num)]);
+            %newGoto = add_block('customlib/Default Simulink/Simulink blocks/Goto', [address '/Goto' num2str(num)]);
         catch ME
             % If a block already exists with the same name
             if strcmp(ME.identifier, 'Simulink:Commands:AddBlockCantAdd')
@@ -181,7 +181,7 @@ function line2Goto(address, line, tag)
                 %%%%% FCA ePT %%%%%
                 %newFrom(j) = add_block('ChryslerLib/Signals/From', [address '/From' num2str(num+j-1)]);
                 %%%%% FCA PMBD %%%%%
-                %newFrom(j) = add_block('customlib/Default Simulink/Simulink Blocks/From', [address '/From' num2str(num+j-1)]);
+                %newFrom(j) = add_block('customlib/Default Simulink/Simulink blocks/From', [address '/From' num2str(num+j-1)]);
             catch ME
                 if strcmp(ME.identifier, 'Simulink:Commands:AddBlockCantAdd')
                     num = num + 1;  % Try next name
