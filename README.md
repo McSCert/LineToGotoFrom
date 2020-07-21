@@ -6,3 +6,5 @@ The use of Goto/From blocks or signal lines helps to increase Simulink model rea
 
 ## User Guide
 For installation and other information, please see the [User Guide](doc/LineToGotoFrom_UserGuide.pdf).
+
+This tool is also available for download on the [Matlab Central File Exchange](https://www.mathworks.com/matlabcentral/fileexchange/59742-line-goto-from-tool).
