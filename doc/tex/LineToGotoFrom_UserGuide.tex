@@ -31,7 +31,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Tool-Specific Macros
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\input{../../common/macros}
+\input{macros}
 
 \newcommand{\ToolName}{Line-Goto/From Tool\@\xspace}
 
@@ -64,7 +64,7 @@
 
 \begin{figure}
 	\centering
-	\includegraphics[]{../../common/McSCert_Logo.pdf} \\
+	\includegraphics[]{../figs/McSCert_Logo.pdf} \\
 	McMaster Centre for Software Certification (McSCert)
 \end{figure}
 
@@ -119,6 +119,7 @@ This section describes what must be done to setup the \ToolName, as well as how 
 		\item \textit{Note:} If running the command ``\cmd{which line2Goto}'' indicates that the script is not found, then the tool needs to be added to the \mpath.
 		For information on adding files to the \mpath, please see the \href{https://www.mathworks.com/help/matlab/matlab_env/add-remove-or-reorder-folders-on-the-search-path.html}{MathWorks documentation}.
 	\end{itemize}
+	\item Ensure the Simulink-Utility folder is on your \mpath. This is a dependency for the tool to work correctly.
 	\item Ensure your model is open and unlocked.
 \end{enumerate}
 
